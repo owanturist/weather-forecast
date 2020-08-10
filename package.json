@@ -21,6 +21,11 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "husky": {
+    "hooks": {
+      "prepare-commit-msg": "./scripts/git-commit-message.sh $HUSKY_GIT_PARAMS"
+    }
+  },
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -35,5 +40,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "husky": "^4.2.5"
   }
 }
