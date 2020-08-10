@@ -1,14 +1,23 @@
 import React from 'react'
+import styled from '@emotion/styled/macro'
+import { css } from 'emotion/macro'
 import logo from './logo.svg'
-import './App.css'
 
 export const foo = 0
 
+const StyledRoot = styled.div`
+  background: #ccc;
+`
+
+const cssLogo = css`
+  height: 50px;
+`
+
 const App: React.FC = () => {
   return (
-    <div className="App">
+    <StyledRoot>
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img src={logo} className={cssLogo} alt="logo" />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
@@ -21,7 +30,7 @@ const App: React.FC = () => {
           Learn React
         </a>
       </header>
-    </div>
+    </StyledRoot>
   )
 }
 
