@@ -9,7 +9,9 @@
     "test": "react-scripts test",
     "compile": "tsc --project ./tsconfig.json",
     "lint": "npm run compile & eslint . --config=.eslintrc.prod.json --ext=js,ts,tsx",
-    "prettify": "prettier . --write"
+    "prettify": "prettier . --write",
+    "storybook": "start-storybook -p 9009 -s public",
+    "storybook:build": "build-storybook -s public"
   },
   "husky": {
     "hooks": {
@@ -33,6 +35,12 @@
     "react-dom": "^16.13.1"
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^5.3.19",
+    "@storybook/addon-knobs": "^5.3.19",
+    "@storybook/addon-links": "^5.3.19",
+    "@storybook/addons": "^5.3.19",
+    "@storybook/preset-create-react-app": "^3.1.4",
+    "@storybook/react": "^5.3.19",
     "@types/jest": "^26.0.9",
     "@types/node": "^14.0.27",
     "@typescript-eslint/eslint-plugin": "^3.8.0",
