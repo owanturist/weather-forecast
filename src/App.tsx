@@ -1,9 +1,45 @@
 import React from 'react'
 import styled from '@emotion/styled/macro'
 import { css } from 'emotion/macro'
+
+import { Dispatch } from 'Provider'
 import logo from './logo.svg'
 
 export const foo = 0
+
+// S T A T E
+
+export type State = {
+  count: number
+}
+
+export const initial: State = {
+  count: 0
+}
+
+// U P D A T E
+
+export type Action = { type: 'Increment' } | { type: 'Decrement' }
+
+export const udpate = (action: Action, state: State): State => {
+  switch (action.type) {
+    case 'Increment': {
+      return {
+        ...state,
+        count: state.count + 1
+      }
+    }
+
+    case 'Decrement': {
+      return {
+        ...state,
+        count: state.count - 1
+      }
+    }
+  }
+}
+
+// V I E W
 
 const StyledRoot = styled.div`
   background: #ccc;
@@ -13,7 +49,10 @@ const cssLogo = css`
   height: 50px;
 `
 
-const App: React.FC = () => {
+export const View: React.FC<{ state: State; dispatch: Dispatch<Action> }> = ({
+  state,
+  dispatch
+}) => {
   return (
     <StyledRoot>
       <header className="App-header">
@@ -30,8 +69,15 @@ const App: React.FC = () => {
           Learn React
         </a>
       </header>
+      <div>
+        <button type="button" onClick={() => dispatch({ type: 'Decrement' })}>
+          -
+        </button>
+        {state.count}
+        <button type="button" onClick={() => dispatch({ type: 'Increment' })}>
+          +
+        </button>
+      </div>
     </StyledRoot>
   )
 }
-
-export default App

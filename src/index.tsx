@@ -1,12 +1,15 @@
+import './index.css'
+
 import React from 'react'
 import ReactDOM from 'react-dom'
-import './index.css'
-import App from './App'
-import * as serviceWorker from './serviceWorker'
+
+import * as serviceWorker from 'serviceWorker'
+import { Provider } from 'Provider'
+import * as App from 'App'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider initial={App.initial} update={App.udpate} view={App.View} />
   </React.StrictMode>,
   document.getElementById('root')
 )
