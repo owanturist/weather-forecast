@@ -10,6 +10,7 @@
     "compile": "tsc --project ./tsconfig.json",
     "lint": "npm run compile & eslint . --config=.eslintrc.prod.json --ext=js,ts,tsx",
     "prettify": "prettier . --write",
+    "analyze": "source-map-explorer 'build/static/js/**/*.js' --gzip",
     "storybook": "start-storybook -p 9009 -s public",
     "storybook:build": "build-storybook -s public"
   },
@@ -54,6 +55,7 @@
     "prettier": "^2.0.5",
     "react-scripts": "^3.4.1",
     "serve": "^11.3.2",
+    "source-map-explorer": "^2.4.2",
     "typescript": "^3.9.7"
   }
 }
