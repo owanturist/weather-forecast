@@ -1,6 +1,7 @@
 import React from 'react'
 import dayjs from 'dayjs'
-import styled from '@emotion/styled/macro'
+import { css } from 'emotion/macro'
+import { number } from '@storybook/addon-knobs'
 
 import { TempUnits, DayForecast } from 'api'
 import WeekRow from './index'
@@ -16,16 +17,22 @@ const makeDayForecast = (datestring: string, temp: number): DayForecast => ({
   details: []
 })
 
-const Container = styled.div`
+const cssContainer = css`
   box-sizing: border-box;
-  padding: 5px;
-  /* width: 480px; */
-  background: #ccc;
+  padding: 20px;
+  width: 480px;
+  border: 2px solid #ccc;
+  overflow: hidden;
 `
 
 export const Initial: React.FC = () => (
-  <Container>
+  <div className={cssContainer}>
     <WeekRow
+      shiftIndex={number('Shift Index', 0, {
+        min: 0,
+        max: 4,
+        step: 1
+      })}
       units={TempUnits.Celcius}
       weekForecast={[
         makeDayForecast('09-02-1993', 23),
@@ -35,5 +42,5 @@ export const Initial: React.FC = () => (
         makeDayForecast('09-06-1993', 17)
       ]}
     />
-  </Container>
+  </div>
 )
