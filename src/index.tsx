@@ -9,7 +9,7 @@ import * as App from 'App'
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider initial={App.initial} update={App.udpate} view={App.View} />
+    <Provider init={App.init} update={App.udpate} view={App.View} />
   </React.StrictMode>,
   document.getElementById('root')
 )

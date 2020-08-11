@@ -1,11 +1,10 @@
 import React from 'react'
-import { createStore, Action, PreloadedState } from 'redux'
-
-export type Dispatch<A extends Action> = (action: A) => void
+import { createStore, Action } from 'redux'
+import { Dispatch, Effects, setupEffects } from 'core'
 
 export type Props<S, A extends Action> = {
-  initial: S
-  update(action: A, model: S): S
+  init: [S, Effects<A>]
+  update(action: A, model: S): [S, Effects<A>]
   view: React.ComponentType<{
     state: S
     dispatch: Dispatch<A>
@@ -13,20 +12,16 @@ export type Props<S, A extends Action> = {
 }
 
 export const Provider = React.memo(
-  <S, A extends Action>({ view: View, initial, update }: Props<S, A>) => {
+  <S, A extends Action>({ view: View, init, update }: Props<S, A>) => {
     const [state, setState] = React.useState<null | {
       state: S
       dispatch: Dispatch<A>
     }>(null)
 
     React.useEffect(() => {
-      const store = createStore<S, A, unknown, unknown>(
-        (dangerousState, action) => {
-          const actualState = dangerousState || initial
-
-          return update(action, actualState) || actualState
-        },
-        initial as PreloadedState<S>
+      const store = setupEffects<S, A, unknown, unknown>(createStore)(
+        update,
+        init
       )
 
       const unsubscribe = store.subscribe(() => {
@@ -42,7 +37,7 @@ export const Provider = React.memo(
       })
 
       return () => unsubscribe()
-    }, [initial, update])
+    }, [init, update])
 
     return state && <View state={state.state} dispatch={state.dispatch} />
   }
