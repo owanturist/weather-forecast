@@ -22,7 +22,7 @@ export type Effects<A extends Action> = Array<Effect<A>>
 
 export type Dispatch<A extends Action> = (action: A) => void
 
-export const setupEffects = <S, A extends Action, Ext, StateExt>(
+export const createStoreWithEffects = <S, A extends Action, Ext, StateExt>(
   createStore: StoreCreator
 ) => (
   update: (action: A, state: S) => [S, Effects<A>],

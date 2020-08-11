@@ -33,13 +33,14 @@
   },
   "dependencies": {
     "@emotion/styled": "^10.0.27",
+    "@material-ui/core": "^4.11.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "emotion": "^10.0.27",
-    "normalize.css": "^8.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.8"
   },
   "devDependencies": {
     "@bahmutov/add-typescript-to-cypress": "^2.1.2",
