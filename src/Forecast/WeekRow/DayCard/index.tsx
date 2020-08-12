@@ -14,10 +14,10 @@ const unitsToLabel = (units: TempUnits): string => {
   }
 }
 
-const DayCard: React.FC<{ units: TempUnits; forecast: DayForecast }> = ({
-  units,
-  forecast
-}) => (
+const DayCard: React.FC<{
+  units: TempUnits
+  forecast: DayForecast
+}> = React.memo(({ units, forecast }) => (
   <Card>
     <CardContent>
       <Typography variant="h4">
@@ -30,6 +30,6 @@ const DayCard: React.FC<{ units: TempUnits; forecast: DayForecast }> = ({
       </Typography>
     </CardContent>
   </Card>
-)
+))
 
 export default DayCard

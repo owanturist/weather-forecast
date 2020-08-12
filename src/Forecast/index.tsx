@@ -1,84 +1,123 @@
 import React from 'react'
 import RemoteData from 'frctl/RemoteData'
+import Zoom from '@material-ui/core/Zoom'
 import Box from '@material-ui/core/Box'
 import Container from '@material-ui/core/Container'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControl from '@material-ui/core/FormControl'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
-import IconButton from '@material-ui/core/IconButton'
+import IconButton, { IconButtonProps } from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 
 import { TempUnits, DayForecast } from 'api'
 import WeekRow from './WeekRow'
-import { clamp } from 'utils'
 import styles from './styles.module.css'
 
 // S T A T E
 
 export type State = {
-  shiftIndex: number
   units: TempUnits
   weekForecast: RemoteData<string, Array<DayForecast>>
 }
 
 export const initial: State = {
-  shiftIndex: 0,
   units: TempUnits.Fahrenheit,
   weekForecast: RemoteData.Loading
 }
 
 // V I E W
 
+const ViewNavigationButton: React.FC<
+  IconButtonProps & {
+    visible: boolean
+  }
+> = ({ visible, ...props }) => (
+  <Zoom in={visible}>
+    <IconButton color="primary" disabled={!visible} {...props} />
+  </Zoom>
+)
+
+const ViewNavigation: React.FC<{
+  prevVisible: boolean
+  nextVisible: boolean
+  onPrevClick(): void
+  onNextClick(): void
+}> = React.memo(({ prevVisible, nextVisible, onPrevClick, onNextClick }) => (
+  <Box display="flex" justifyContent="space-between">
+    <ViewNavigationButton
+      visible={prevVisible}
+      aria-label="Scroll to previous day"
+      onClick={onPrevClick}
+    >
+      <ArrowBackIcon />
+    </ViewNavigationButton>
+
+    <ViewNavigationButton
+      visible={nextVisible}
+      aria-label="Scroll to next day"
+      onClick={onNextClick}
+    >
+      <ArrowForwardIcon />
+    </ViewNavigationButton>
+  </Box>
+))
+
 const ViewSucceed: React.FC<{
-  shiftIndex: number
   units: TempUnits
   weekForecast: Array<DayForecast>
-}> = ({ shiftIndex, units, weekForecast }) => (
-  <Container maxWidth="md">
-    <FormControl component="fieldset" fullWidth>
-      <RadioGroup
-        row
-        aria-label="Temperature units"
-        name="temp-units"
-        value={units}
-        className={styles.radioGroup}
-      >
-        <FormControlLabel
-          label="Celcius"
-          value={TempUnits.Celcius}
-          control={<Radio color="primary" />}
+}> = React.memo(({ units, weekForecast }) => {
+  const [shiftIndex, setShiftIndex] = React.useState(0)
+
+  return (
+    <Container disableGutters maxWidth="md">
+      <Box padding={1}>
+        <FormControl component="fieldset" fullWidth>
+          <RadioGroup
+            row
+            aria-label="Temperature units"
+            name="temp-units"
+            value={units}
+            className={styles.radioGroup}
+          >
+            <FormControlLabel
+              label="Celcius"
+              value={TempUnits.Celcius}
+              control={<Radio color="primary" />}
+            />
+
+            <FormControlLabel
+              label="Fahrenheit"
+              labelPlacement="start"
+              value={TempUnits.Fahrenheit}
+              control={<Radio color="primary" />}
+            />
+          </RadioGroup>
+        </FormControl>
+
+        <ViewNavigation
+          prevVisible={shiftIndex > 0}
+          nextVisible={shiftIndex < weekForecast.length - 3}
+          onPrevClick={React.useCallback(() => setShiftIndex(shiftIndex - 1), [
+            shiftIndex
+          ])}
+          onNextClick={React.useCallback(() => setShiftIndex(shiftIndex + 1), [
+            shiftIndex
+          ])}
         />
+      </Box>
 
-        <FormControlLabel
-          label="Fahrenheit"
-          labelPlacement="start"
-          value={TempUnits.Fahrenheit}
-          control={<Radio color="primary" />}
+      <Box padding={1} className={styles.weekRowContainer}>
+        <WeekRow
+          shiftIndex={shiftIndex}
+          units={units}
+          weekForecast={weekForecast}
         />
-      </RadioGroup>
-    </FormControl>
-
-    <Box display="flex" justifyContent="space-between">
-      <IconButton aria-label="Scroll to previous day" color="primary">
-        <ArrowBackIcon />
-      </IconButton>
-
-      <IconButton aria-label="Scroll to next day" color="primary">
-        <ArrowForwardIcon />
-      </IconButton>
-    </Box>
-
-    <Box padding={1} className={styles.weekRowContainer}>
-      <WeekRow
-        shiftIndex={shiftIndex}
-        units={units}
-        weekForecast={weekForecast}
-      />
-    </Box>
-  </Container>
-)
+      </Box>
+    </Container>
+  )
+})
 
 export const View: React.FC<{
   state: State
@@ -89,10 +128,6 @@ export const View: React.FC<{
     Failure: error => <div>{error}</div>,
 
     Succeed: weekForecast => (
-      <ViewSucceed
-        shiftIndex={clamp(0, 2, state.shiftIndex)}
-        units={state.units}
-        weekForecast={weekForecast}
-      />
+      <ViewSucceed units={state.units} weekForecast={weekForecast} />
     )
   })

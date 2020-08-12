@@ -1,6 +1,5 @@
 import React from 'react'
 import dayjs from 'dayjs'
-import { number } from '@storybook/addon-knobs'
 import RemoteData from 'frctl/RemoteData'
 
 import { TempUnits, DayForecast } from 'api'
@@ -18,7 +17,6 @@ const makeDayForecast = (datestring: string, temp: number): DayForecast => ({
 })
 
 const knobState = (): Forecast.State => ({
-  shiftIndex: number('Shift Index', 0),
   units: TempUnits.Fahrenheit,
   weekForecast: RemoteData.Succeed([
     makeDayForecast('09-02-1993', 23),
