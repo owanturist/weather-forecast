@@ -2,7 +2,7 @@ import React from 'react'
 import Grid from '@material-ui/core/Grid'
 
 import { TempUnits, DayForecast } from 'api'
-import DayCard from '../DayCard'
+import DayCard from './DayCard'
 import styles from './styles.module.css'
 
 const CARD_WIDTH_PCT = 33.33

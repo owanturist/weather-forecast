@@ -6,7 +6,7 @@ import { TempUnits, DayForecast } from 'api'
 import DayCard from './index'
 
 export default {
-  title: 'Forecast . DayCard',
+  title: 'Forecast . WeekRow . DayCard',
   component: DayCard
 }
 
