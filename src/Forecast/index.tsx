@@ -1,18 +1,19 @@
-import React from 'react'
+import React, { ReactNode, ReactElement } from 'react'
 import RemoteData from 'frctl/RemoteData'
 import Zoom from '@material-ui/core/Zoom'
 import Box from '@material-ui/core/Box'
 import Container from '@material-ui/core/Container'
 import Radio from '@material-ui/core/Radio'
-import RadioGroup from '@material-ui/core/RadioGroup'
+import RadioGroup, { RadioGroupProps } from '@material-ui/core/RadioGroup'
 import FormControl from '@material-ui/core/FormControl'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import IconButton, { IconButtonProps } from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import Skeleton from '@material-ui/lab/Skeleton'
 
 import { TempUnits, DayForecast } from 'api'
-import WeekRow from './WeekRow'
+import WeekRow, { SkeletonWeekRow } from './WeekRow'
 import styles from './styles.module.css'
 
 // S T A T E
@@ -29,15 +30,56 @@ export const initial: State = {
 
 // V I E W
 
+const ViewControlsContainer: React.FC = ({ children }) => (
+  <Box padding={1}>{children}</Box>
+)
+
+const ViewNavigationContainer: React.FC = ({ children }) => (
+  <Box display="flex" justifyContent="space-between">
+    {children}
+  </Box>
+)
+
+const ViewWeekRowContainer: React.FC = ({ children }) => (
+  <Box padding={1} className={styles.weekRowContainer}>
+    {children}
+  </Box>
+)
+
+const ViewFoo: React.FC<
+  RadioGroupProps & {
+    control: ReactElement
+    celciusNode: ReactNode
+    fahrenheitNode: ReactNode
+  }
+> = ({ control, celciusNode, fahrenheitNode, ...props }) => (
+  <FormControl component="fieldset" fullWidth>
+    <RadioGroup row className={styles.radioGroup} {...props}>
+      <FormControlLabel
+        label={celciusNode}
+        value={TempUnits.Celcius}
+        control={control}
+      />
+
+      <FormControlLabel
+        label={fahrenheitNode}
+        labelPlacement="start"
+        value={TempUnits.Fahrenheit}
+        control={control}
+      />
+    </RadioGroup>
+  </FormControl>
+)
+
 const ViewNavigationButton: React.FC<
   IconButtonProps & {
     visible: boolean
   }
-> = ({ visible, ...props }) => (
+> = React.memo(({ visible, ...props }) => (
   <Zoom in={visible}>
     <IconButton color="primary" disabled={!visible} {...props} />
   </Zoom>
-)
+))
 
 const ViewNavigation: React.FC<{
   prevVisible: boolean
@@ -45,7 +87,7 @@ const ViewNavigation: React.FC<{
   onPrevClick(): void
   onNextClick(): void
 }> = React.memo(({ prevVisible, nextVisible, onPrevClick, onNextClick }) => (
-  <Box display="flex" justifyContent="space-between">
+  <ViewNavigationContainer>
     <ViewNavigationButton
       visible={prevVisible}
       aria-label="Scroll to previous day"
@@ -61,7 +103,7 @@ const ViewNavigation: React.FC<{
     >
       <ArrowForwardIcon />
     </ViewNavigationButton>
-  </Box>
+  </ViewNavigationContainer>
 ))
 
 const ViewSucceed: React.FC<{
@@ -72,29 +114,15 @@ const ViewSucceed: React.FC<{
 
   return (
     <Container disableGutters maxWidth="md">
-      <Box padding={1}>
-        <FormControl component="fieldset" fullWidth>
-          <RadioGroup
-            row
-            aria-label="Temperature units"
-            name="temp-units"
-            value={units}
-            className={styles.radioGroup}
-          >
-            <FormControlLabel
-              label="Celcius"
-              value={TempUnits.Celcius}
-              control={<Radio color="primary" />}
-            />
-
-            <FormControlLabel
-              label="Fahrenheit"
-              labelPlacement="start"
-              value={TempUnits.Fahrenheit}
-              control={<Radio color="primary" />}
-            />
-          </RadioGroup>
-        </FormControl>
+      <ViewControlsContainer>
+        <ViewFoo
+          aria-label="Temperature units"
+          name="temp-units"
+          value={units}
+          control={<Radio color="primary" />}
+          celciusNode="Celcius"
+          fahrenheitNode="Fahrenheit"
+        />
 
         <ViewNavigation
           prevVisible={shiftIndex > 0}
@@ -106,15 +134,16 @@ const ViewSucceed: React.FC<{
             shiftIndex
           ])}
         />
-      </Box>
+      </ViewControlsContainer>
 
-      <Box padding={1} className={styles.weekRowContainer}>
+      <ViewWeekRowContainer>
         <WeekRow
+          pageSize={3}
           shiftIndex={shiftIndex}
           units={units}
           weekForecast={weekForecast}
         />
-      </Box>
+      </ViewWeekRowContainer>
     </Container>
   )
 })
@@ -123,7 +152,7 @@ export const View: React.FC<{
   state: State
 }> = ({ state }) =>
   state.weekForecast.cata({
-    Loading: () => <div>Loading...</div>,
+    Loading: () => <SkeletonForecast />,
 
     Failure: error => <div>{error}</div>,
 
@@ -131,3 +160,40 @@ export const View: React.FC<{
       <ViewSucceed units={state.units} weekForecast={weekForecast} />
     )
   })
+
+// S K E L E T O N
+
+const SkeletNavButton: React.FC = () => (
+  <Skeleton variant="circle" width="48px" height="48px" />
+)
+
+const SkeletonForecast: React.FC = React.memo(() => (
+  <Container disableGutters maxWidth="md">
+    <ViewControlsContainer>
+      <ViewFoo
+        control={
+          <Box
+            width="42px"
+            height="42px"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Skeleton variant="circle" width="20px" height="20px" />
+          </Box>
+        }
+        celciusNode={<Skeleton width="54px" />}
+        fahrenheitNode={<Skeleton width="78px" />}
+      />
+
+      <ViewNavigationContainer>
+        <SkeletNavButton />
+        <SkeletNavButton />
+      </ViewNavigationContainer>
+    </ViewControlsContainer>
+
+    <ViewWeekRowContainer>
+      <SkeletonWeekRow pageSize={3} />
+    </ViewWeekRowContainer>
+  </Container>
+))

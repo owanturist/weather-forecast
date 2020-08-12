@@ -3,7 +3,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import { date, number, optionsKnob } from '@storybook/addon-knobs'
 
 import { TempUnits, DayForecast } from 'api'
-import DayCard from './index'
+import DayCard, { SkeletonDayCard } from './index'
 
 export default {
   title: 'Forecast . WeekRow . DayCard',
@@ -40,3 +40,5 @@ export const Initial: React.FC = () => (
     forecast={knobDayForecast()}
   />
 )
+
+export const Skeleton: React.FC = () => <SkeletonDayCard />
