@@ -23,7 +23,7 @@ const WeekRow: React.FC<{
   <Grid
     className={cssGridContainer}
     container
-    spacing={1}
+    spacing={2}
     wrap="nowrap"
     style={{
       transform: `translate3d(${-CARD_WIDTH_PCT * shiftIndex}%, 0, 0)`

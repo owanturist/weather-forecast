@@ -1589,6 +1589,13 @@
     react-is "^16.8.0"
     react-transition-group "^4.4.0"
 
+"@material-ui/icons@^4.9.1":
+  version "4.9.1"
+  resolved "https://registry.yarnpkg.com/@material-ui/icons/-/icons-4.9.1.tgz#fdeadf8cb3d89208945b33dbc50c7c616d0bd665"
+  integrity sha512-GBitL3oBWO0hzBhvA9KxqcowRUsA0qzwKkURyC8nppnC3fw54KPKZ+d4V1Eeg/UnDRSzDaI9nGCdel/eh9AQMg==
+  dependencies:
+    "@babel/runtime" "^7.4.4"
+
 "@material-ui/lab@^4.0.0-alpha.56":
   version "4.0.0-alpha.56"
   resolved "https://registry.yarnpkg.com/@material-ui/lab/-/lab-4.0.0-alpha.56.tgz#ff63080949b55b40625e056bbda05e130d216d34"
@@ -6823,6 +6830,11 @@ fragment-cache@^0.2.1:
   integrity sha1-QpD60n8T6Jvn8zeZxrxaCr//DRk=
   dependencies:
     map-cache "^0.2.2"
+
+frctl@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/frctl/-/frctl-2.0.0.tgz#6f6affc9ee1a95214b6d3c5aa2e8305906d01712"
+  integrity sha512-8pXbAFIME3q/xmHGnIiBQfY7V47vGq0aZl2GjCe5NTJI69CNjGG5+hEGZfOIYl7JfNSSd3IHCINHE1lmTL+L4g==
 
 fresh@0.5.2:
   version "0.5.2"
