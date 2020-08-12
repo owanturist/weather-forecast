@@ -1,19 +1,11 @@
 import React from 'react'
 import Grid from '@material-ui/core/Grid'
-import { css } from 'emotion/macro'
 
 import { TempUnits, DayForecast } from 'api'
 import DayCard from '../DayCard'
+import styles from './styles.module.css'
 
 const CARD_WIDTH_PCT = 33.33
-
-const cssGridItem = css`
-  flex-shrink: 0;
-`
-
-const cssGridContainer = css`
-  transition: 0.3s transform ease;
-`
 
 const WeekRow: React.FC<{
   units: TempUnits
@@ -21,7 +13,7 @@ const WeekRow: React.FC<{
   shiftIndex: number
 }> = ({ units, weekForecast, shiftIndex }) => (
   <Grid
-    className={cssGridContainer}
+    className={styles.container}
     container
     spacing={2}
     wrap="nowrap"
@@ -31,10 +23,10 @@ const WeekRow: React.FC<{
   >
     {weekForecast.map(forecast => (
       <Grid
-        className={cssGridItem}
+        className={styles.item}
         item
         xs={4}
-        key={forecast.date.get('millisecond')}
+        key={forecast.date.toISOString()}
       >
         <DayCard units={units} forecast={forecast} />
       </Grid>

@@ -1,6 +1,4 @@
 import React from 'react'
-import styled from '@emotion/styled/macro'
-import { css } from 'emotion/macro'
 
 import { Dispatch, Effects } from 'core'
 import logo from './logo.svg'
@@ -58,22 +56,14 @@ export const udpate = (
 
 // V I E W
 
-const StyledRoot = styled.div`
-  background: #ccc;
-`
-
-const cssLogo = css`
-  height: 50px;
-`
-
 export const View: React.FC<{ state: State; dispatch: Dispatch<Action> }> = ({
   state,
   dispatch
 }) => {
   return (
-    <StyledRoot>
+    <div>
       <header className="App-header">
-        <img src={logo} className={cssLogo} alt="logo" />
+        <img src={logo} alt="logo" />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
@@ -95,6 +85,6 @@ export const View: React.FC<{ state: State; dispatch: Dispatch<Action> }> = ({
           +
         </button>
       </div>
-    </StyledRoot>
+    </div>
   )
 }

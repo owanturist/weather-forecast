@@ -1,6 +1,5 @@
 import React from 'react'
 import dayjs from 'dayjs'
-import { css } from 'emotion/macro'
 import { number } from '@storybook/addon-knobs'
 
 import { TempUnits, DayForecast } from 'api'
@@ -17,16 +16,16 @@ const makeDayForecast = (datestring: string, temp: number): DayForecast => ({
   details: []
 })
 
-const cssContainer = css`
-  box-sizing: border-box;
-  padding: 20px;
-  width: 480px;
-  border: 2px solid #ccc;
-  overflow: hidden;
-`
+const styleContainer: React.CSSProperties = {
+  boxSizing: 'border-box',
+  padding: '20px',
+  width: '480px',
+  border: '2px solid #ccc',
+  overflow: 'hidden'
+}
 
 export const Initial: React.FC = () => (
-  <div className={cssContainer}>
+  <div style={styleContainer}>
     <WeekRow
       shiftIndex={number('Shift Index', 0, {
         min: 0,

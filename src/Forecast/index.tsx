@@ -1,5 +1,4 @@
 import React from 'react'
-import { css } from 'emotion/macro'
 import RemoteData from 'frctl/RemoteData'
 import Box from '@material-ui/core/Box'
 import Container from '@material-ui/core/Container'
@@ -14,6 +13,7 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import { TempUnits, DayForecast } from 'api'
 import WeekRow from './WeekRow'
 import { clamp } from 'utils'
+import styles from './styles.module.css'
 
 // S T A T E
 
@@ -31,15 +31,6 @@ export const initial: State = {
 
 // V I E W
 
-const cssWeekRowContainer = css`
-  overflow-x: hidden;
-  overflow-y: visible;
-`
-
-const cssRadioGroup = css`
-  justify-content: space-between;
-`
-
 const ViewSucceed: React.FC<{
   shiftIndex: number
   units: TempUnits
@@ -52,7 +43,7 @@ const ViewSucceed: React.FC<{
         aria-label="Temperature units"
         name="temp-units"
         value={units}
-        className={cssRadioGroup}
+        className={styles.radioGroup}
       >
         <FormControlLabel
           label="Celcius"
@@ -79,7 +70,7 @@ const ViewSucceed: React.FC<{
       </IconButton>
     </Box>
 
-    <Box padding={1} className={cssWeekRowContainer}>
+    <Box padding={1} className={styles.weekRowContainer}>
       <WeekRow
         shiftIndex={shiftIndex}
         units={units}
