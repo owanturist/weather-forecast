@@ -114,12 +114,14 @@ const ViewUnits: React.FC<
   <FormControl component="fieldset" fullWidth>
     <RadioGroup row className={styles.radioGroup} {...props}>
       <FormControlLabel
+        data-cy="forecast__radio_metric"
         label={celciusNode}
         value={TempUnits.Celcius}
         control={control}
       />
 
       <FormControlLabel
+        data-cy="forecast__radio_imperial"
         label={fahrenheitNode}
         labelPlacement="start"
         value={TempUnits.Fahrenheit}

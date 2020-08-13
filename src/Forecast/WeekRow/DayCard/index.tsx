@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import Card from '@material-ui/core/Card'
+import Card, { CardProps } from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
 import Skeleton from '@material-ui/lab/Skeleton'
@@ -15,11 +15,13 @@ const unitsToLabel = (units: TempUnits): string => {
   }
 }
 
-const ViewCard: React.FC<{
-  tempNode: ReactNode
-  dateNode: ReactNode
-}> = ({ tempNode: tempComponent, dateNode: dateComponent }) => (
-  <Card>
+const ViewCard: React.FC<
+  CardProps & {
+    tempNode: ReactNode
+    dateNode: ReactNode
+  }
+> = ({ tempNode: tempComponent, dateNode: dateComponent, ...props }) => (
+  <Card {...props}>
     <CardContent>
       <Typography variant="h4">{tempComponent}</Typography>
 
@@ -33,6 +35,7 @@ const DayCard: React.FC<{
   forecast: DayForecast
 }> = React.memo(({ units, forecast }) => (
   <ViewCard
+    data-cy="day-card__root"
     tempNode={forecast.getAverageTemp().toString() + unitsToLabel(units)}
     dateNode={forecast.getDate().format('DD MMM YY')}
   />

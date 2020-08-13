@@ -9,7 +9,7 @@ describe('App spec', () => {
   it('shows loading skeleton while loading initial data', () => {
     cy.route({
       url: '**/forecast**',
-      response: 'fixture:success',
+      response: 'fixture:success_imperial',
       status: 200,
       delay: 100
     }).as('getForecast')
@@ -25,7 +25,7 @@ describe('App spec', () => {
   it('shows error screen when request failed', () => {
     cy.route({
       url: '**/forecast**',
-      response: 'fixture:success',
+      response: 'fixture:success_imperial',
       status: 500,
       delay: 100
     }).as('getForecast')
@@ -38,7 +38,7 @@ describe('App spec', () => {
   it('can retry when fails by timeout', () => {
     cy.route({
       url: '**/forecast**',
-      response: 'fixture:success',
+      response: 'fixture:success_imperial',
       status: 200,
       delay: 300
     }).as('getForecastSlow')
@@ -48,7 +48,7 @@ describe('App spec', () => {
 
     cy.route({
       url: '**/forecast**',
-      response: 'fixture:success',
+      response: 'fixture:success_imperial',
       status: 200,
       delay: 100
     }).as('getForecastFast')
