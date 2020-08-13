@@ -1,4 +1,6 @@
 import React from 'react'
+import Container from '@material-ui/core/Container'
+import Box from '@material-ui/core/Box'
 
 import { Effects, Dispatch, mapEffects } from 'core'
 import * as Forecast from '../Forecast'
@@ -56,8 +58,20 @@ export const View: React.FC<{ state: State; dispatch: Dispatch<Action> }> = ({
   state,
   dispatch
 }) => (
-  <Forecast.View
-    state={state.forecast}
-    dispatch={action => dispatch(ForecastAction(action))}
-  />
+  <Box
+    display="flex"
+    minHeight="100%"
+    justifyContent="center"
+    alignItems="center"
+    padding={2}
+  >
+    <Container disableGutters maxWidth="md">
+      <Box bgcolor="background.paper">
+        <Forecast.View
+          state={state.forecast}
+          dispatch={action => dispatch(ForecastAction(action))}
+        />
+      </Box>
+    </Container>
+  </Box>
 )

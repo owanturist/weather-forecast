@@ -1,7 +1,6 @@
 import React, { ReactNode, ReactElement } from 'react'
 import Zoom from '@material-ui/core/Zoom'
 import Box from '@material-ui/core/Box'
-import Container from '@material-ui/core/Container'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup, { RadioGroupProps } from '@material-ui/core/RadioGroup'
 import FormControl from '@material-ui/core/FormControl'
@@ -172,7 +171,7 @@ const ViewSucceed: React.FC<{
   const [shiftIndex, setShiftIndex] = React.useState(0)
 
   return (
-    <Container disableGutters maxWidth="md">
+    <>
       <ViewControlsContainer>
         <ViewUnits
           aria-label="Temperature units"
@@ -206,7 +205,7 @@ const ViewSucceed: React.FC<{
           weekForecast={weekForecast}
         />
       </ViewWeekRowContainer>
-    </Container>
+    </>
   )
 })
 
@@ -235,7 +234,7 @@ const SkeletNavButton: React.FC = () => (
 )
 
 const SkeletonForecast: React.FC = React.memo(() => (
-  <Container disableGutters maxWidth="md">
+  <>
     <ViewControlsContainer>
       <ViewUnits
         control={
@@ -262,5 +261,5 @@ const SkeletonForecast: React.FC = React.memo(() => (
     <ViewWeekRowContainer>
       <SkeletonWeekRow pageSize={3} />
     </ViewWeekRowContainer>
-  </Container>
+  </>
 ))
