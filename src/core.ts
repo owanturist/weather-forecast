@@ -1,10 +1,14 @@
 import {
-  Action,
+  Action as ReduxAction,
   PreloadedState,
   StoreEnhancer,
   StoreCreator,
   Store
 } from 'redux'
+
+import { once } from 'utils'
+
+export type Action = ReduxAction
 
 /**
  * Effect allows to call Action in async moment.
@@ -48,7 +52,7 @@ export const createStoreWithEffects = <S, A extends Action, Ext, StateExt>(
 
   const executeEffects = (effects: Effects<A>): void => {
     for (const effect of effects) {
-      effect(store.dispatch)
+      effect(once(store.dispatch))
     }
   }
 

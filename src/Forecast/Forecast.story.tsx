@@ -6,7 +6,7 @@ import { TempUnits, DayForecast } from 'api'
 import * as Forecast from './index'
 
 export default {
-  title: 'Forecast . Forecast',
+  title: 'Forecast',
   component: Forecast.View
 }
 
@@ -31,6 +31,8 @@ export const Loading: React.FC = () => (
   <Forecast.View state={Forecast.initial} />
 )
 
+export const Succeed: React.FC = () => <Forecast.View state={knobState()} />
+
 export const Failure: React.FC = () => (
   <Forecast.View
     state={{
@@ -39,5 +41,3 @@ export const Failure: React.FC = () => (
     }}
   />
 )
-
-export const Succeed: React.FC = () => <Forecast.View state={knobState()} />
