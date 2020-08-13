@@ -5,6 +5,7 @@ import Radio from '@material-ui/core/Radio'
 import RadioGroup, { RadioGroupProps } from '@material-ui/core/RadioGroup'
 import FormControl from '@material-ui/core/FormControl'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Button from '@material-ui/core/Button'
 import IconButton, { IconButtonProps } from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
@@ -42,7 +43,7 @@ export type Action =
   | { type: 'LoadForecastDone'; result: Either<HttpError, Array<DayForecast>> }
   | { type: 'ChangeUnits'; units: TempUnits }
 
-// const LoadForecast: Action = { type: 'LoadForecast' }
+const LoadForecast: Action = { type: 'LoadForecast' }
 
 const LoadForecastDone = (
   result: Either<HttpError, Array<DayForecast>>
@@ -209,21 +210,64 @@ const ViewSucceed: React.FC<{
   )
 })
 
+const ViewFailure: React.FC<{
+  error: HttpError
+  dispatch: Dispatch<Action>
+}> = React.memo(({ error, dispatch }) => {
+  return error.cata({
+    Timeout: () => (
+      <div>
+        Timeout{' '}
+        <Button
+          data-cy="forecast__retry"
+          color="secondary"
+          onClick={() => dispatch(LoadForecast)}
+        >
+          Try again
+        </Button>
+      </div>
+    ),
+
+    NetworkError: () => <div>NetworkError</div>,
+
+    BadUrl: url => <div>BadUrl: {url}</div>,
+
+    BadStatus: response => <div>BadStatus {response.statusCode}</div>,
+
+    BadBody: decodeError => (
+      <div>
+        BadBody
+        <code>{decodeError.stringify(4)}</code>
+      </div>
+    )
+  })
+})
+
 export const View: React.FC<{
   state: State
   dispatch: Dispatch<Action>
 }> = ({ state, dispatch }) =>
   state.weekForecast.cata({
-    Loading: () => <SkeletonForecast />,
+    Loading: () => (
+      <div data-cy="forecast__skeleton">
+        <SkeletonForecast />
+      </div>
+    ),
 
-    Failure: () => <div>error</div>,
+    Failure: error => (
+      <div data-cy="forecast__report">
+        <ViewFailure error={error} dispatch={dispatch} />
+      </div>
+    ),
 
     Succeed: weekForecast => (
-      <ViewSucceed
-        units={state.units}
-        weekForecast={weekForecast}
-        dispatch={dispatch}
-      />
+      <div data-cy="forecast__root">
+        <ViewSucceed
+          units={state.units}
+          weekForecast={weekForecast}
+          dispatch={dispatch}
+        />
+      </div>
     )
   })
 

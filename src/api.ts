@@ -6,6 +6,7 @@ import { round } from 'utils'
 
 const FORECAST_API_URL = process.env.REACT_APP_FORECAST_API_URL || ''
 const FORECAST_API_APPID = process.env.REACT_APP_FORECAST_API_APPID || ''
+const TIMEOUT = Number(process.env.REACT_APP_HTTP_TIMEOUT || 0)
 
 export enum TempUnits {
   Celcius = 'metric',
@@ -89,6 +90,7 @@ export const getFiveDayForecastForCity = (
 ): Request<Array<DayForecast>> => {
   return http
     .get(`${FORECAST_API_URL}/forecast`)
+    .withTimeout(TIMEOUT)
     .withQueryParam('appid', FORECAST_API_APPID)
     .withQueryParam('q', city)
     .withQueryParam('units', units)
