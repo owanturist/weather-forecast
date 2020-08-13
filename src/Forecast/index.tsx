@@ -165,10 +165,11 @@ const ViewNavigation: React.FC<{
 ))
 
 const ViewSucceed: React.FC<{
+  pageSize: number
   units: TempUnits
   weekForecast: Array<DayForecast>
   dispatch: Dispatch<Action>
-}> = React.memo(({ units, weekForecast, dispatch }) => {
+}> = React.memo(({ pageSize, units, weekForecast, dispatch }) => {
   const [shiftIndex, setShiftIndex] = React.useState(0)
 
   return (
@@ -188,7 +189,7 @@ const ViewSucceed: React.FC<{
 
         <ViewNavigation
           prevVisible={shiftIndex > 0}
-          nextVisible={shiftIndex < weekForecast.length - 3}
+          nextVisible={shiftIndex < weekForecast.length - pageSize}
           onPrevClick={React.useCallback(() => setShiftIndex(shiftIndex - 1), [
             shiftIndex
           ])}
@@ -200,7 +201,7 @@ const ViewSucceed: React.FC<{
 
       <ViewWeekRowContainer>
         <WeekRow
-          pageSize={3}
+          pageSize={pageSize}
           shiftIndex={shiftIndex}
           units={units}
           weekForecast={weekForecast}
@@ -244,13 +245,14 @@ const ViewFailure: React.FC<{
 })
 
 export const View: React.FC<{
+  pageSize: number
   state: State
   dispatch: Dispatch<Action>
-}> = ({ state, dispatch }) =>
+}> = ({ pageSize, state, dispatch }) =>
   state.weekForecast.cata({
     Loading: () => (
       <div data-cy="forecast__skeleton">
-        <SkeletonForecast />
+        <SkeletonForecast pageSize={pageSize} />
       </div>
     ),
 
@@ -263,6 +265,7 @@ export const View: React.FC<{
     Succeed: weekForecast => (
       <div data-cy="forecast__root">
         <ViewSucceed
+          pageSize={pageSize}
           units={state.units}
           weekForecast={weekForecast}
           dispatch={dispatch}
@@ -277,33 +280,35 @@ const SkeletNavButton: React.FC = () => (
   <Skeleton variant="circle" width="48px" height="48px" />
 )
 
-const SkeletonForecast: React.FC = React.memo(() => (
-  <>
-    <ViewControlsContainer>
-      <ViewUnits
-        control={
-          <Box
-            width="42px"
-            height="42px"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Skeleton variant="circle" width="20px" height="20px" />
-          </Box>
-        }
-        celciusNode={<Skeleton width="54px" />}
-        fahrenheitNode={<Skeleton width="78px" />}
-      />
+const SkeletonForecast: React.FC<{ pageSize: number }> = React.memo(
+  ({ pageSize }) => (
+    <>
+      <ViewControlsContainer>
+        <ViewUnits
+          control={
+            <Box
+              width="42px"
+              height="42px"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Skeleton variant="circle" width="20px" height="20px" />
+            </Box>
+          }
+          celciusNode={<Skeleton width="54px" />}
+          fahrenheitNode={<Skeleton width="78px" />}
+        />
 
-      <ViewNavigationContainer>
-        <SkeletNavButton />
-        <SkeletNavButton />
-      </ViewNavigationContainer>
-    </ViewControlsContainer>
+        <ViewNavigationContainer>
+          <SkeletNavButton />
+          <SkeletNavButton />
+        </ViewNavigationContainer>
+      </ViewControlsContainer>
 
-    <ViewWeekRowContainer>
-      <SkeletonWeekRow pageSize={3} />
-    </ViewWeekRowContainer>
-  </>
-))
+      <ViewWeekRowContainer>
+        <SkeletonWeekRow pageSize={pageSize} />
+      </ViewWeekRowContainer>
+    </>
+  )
+)

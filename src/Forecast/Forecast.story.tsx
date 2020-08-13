@@ -33,15 +33,20 @@ const knobState = (): Forecast.State => ({
 })
 
 export const Loading: React.FC = () => (
-  <Forecast.View state={initial} dispatch={action('dispatch')} />
+  <Forecast.View pageSize={3} state={initial} dispatch={action('dispatch')} />
 )
 
 export const Succeed: React.FC = () => (
-  <Forecast.View state={knobState()} dispatch={action('dispatch')} />
+  <Forecast.View
+    pageSize={3}
+    state={knobState()}
+    dispatch={action('dispatch')}
+  />
 )
 
 export const Failure: React.FC = () => (
   <Forecast.View
+    pageSize={3}
     state={{
       ...initial,
       weekForecast: RemoteData.Failure(HttpError.NetworkError)

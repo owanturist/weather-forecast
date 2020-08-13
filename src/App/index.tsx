@@ -68,6 +68,7 @@ export const View: React.FC<{ state: State; dispatch: Dispatch<Action> }> = ({
     <Container disableGutters maxWidth="md">
       <Box bgcolor="background.paper">
         <Forecast.View
+          pageSize={3}
           state={state.forecast}
           dispatch={action => dispatch(ForecastAction(action))}
         />
