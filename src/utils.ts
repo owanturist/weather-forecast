@@ -33,3 +33,13 @@ export const once = <A extends Array<unknown>>(
     cb = noop
   }
 }
+
+export const round = (float: number, digits?: number): number => {
+  if (typeof digits === 'undefined') {
+    return Math.round(float)
+  }
+
+  const pow = 10 ** digits
+
+  return Math.round(pow * float) / pow
+}

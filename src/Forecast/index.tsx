@@ -1,5 +1,4 @@
 import React, { ReactNode, ReactElement } from 'react'
-import RemoteData from 'frctl/RemoteData'
 import Zoom from '@material-ui/core/Zoom'
 import Box from '@material-ui/core/Box'
 import Container from '@material-ui/core/Container'
@@ -11,8 +10,12 @@ import IconButton, { IconButtonProps } from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import Skeleton from '@material-ui/lab/Skeleton'
+import RemoteData from 'frctl/RemoteData'
+import Either from 'frctl/Either'
 
-import { TempUnits, DayForecast } from 'api'
+import { Effects, Dispatch } from 'core'
+import { TempUnits, DayForecast, getFiveDayForecastForCity } from 'api'
+import { Error as HttpError } from 'httpBuilder'
 import WeekRow, { SkeletonWeekRow } from './WeekRow'
 import styles from './styles.module.css'
 
@@ -20,12 +23,67 @@ import styles from './styles.module.css'
 
 export type State = {
   units: TempUnits
-  weekForecast: RemoteData<string, Array<DayForecast>>
+  weekForecast: RemoteData<HttpError, Array<DayForecast>>
 }
 
-export const initial: State = {
+const initial: State = {
   units: TempUnits.Fahrenheit,
   weekForecast: RemoteData.Loading
+}
+
+export const init = (city: string): [State, Effects<Action>] => [
+  initial,
+  [getFiveDayForecastForCity(initial.units, city).send(LoadForecastDone)]
+]
+
+// U P D A T E
+
+export type Action =
+  | { type: 'LoadForecast' }
+  | { type: 'LoadForecastDone'; result: Either<HttpError, Array<DayForecast>> }
+  | { type: 'ChangeUnits'; units: TempUnits }
+
+// const LoadForecast: Action = { type: 'LoadForecast' }
+
+const LoadForecastDone = (
+  result: Either<HttpError, Array<DayForecast>>
+): Action => ({
+  type: 'LoadForecastDone',
+  result
+})
+
+const ChangeUnits = (units: TempUnits): Action => ({
+  type: 'ChangeUnits',
+  units
+})
+
+export const update = (
+  action: Action,
+  city: string,
+  state: State
+): [State, Effects<Action>] => {
+  switch (action.type) {
+    case 'LoadForecast': {
+      return [
+        { ...state, weekForecast: RemoteData.Loading },
+        [getFiveDayForecastForCity(state.units, city).send(LoadForecastDone)]
+      ]
+    }
+
+    case 'LoadForecastDone': {
+      return [
+        { ...state, weekForecast: RemoteData.fromEither(action.result) },
+        []
+      ]
+    }
+
+    case 'ChangeUnits': {
+      return [
+        { ...state, units: action.units },
+        [getFiveDayForecastForCity(action.units, city).send(LoadForecastDone)]
+      ]
+    }
+  }
 }
 
 // V I E W
@@ -46,7 +104,7 @@ const ViewWeekRowContainer: React.FC = ({ children }) => (
   </Box>
 )
 
-const ViewFoo: React.FC<
+const ViewUnits: React.FC<
   RadioGroupProps & {
     control: ReactElement
     celciusNode: ReactNode
@@ -109,19 +167,23 @@ const ViewNavigation: React.FC<{
 const ViewSucceed: React.FC<{
   units: TempUnits
   weekForecast: Array<DayForecast>
-}> = React.memo(({ units, weekForecast }) => {
+  dispatch: Dispatch<Action>
+}> = React.memo(({ units, weekForecast, dispatch }) => {
   const [shiftIndex, setShiftIndex] = React.useState(0)
 
   return (
     <Container disableGutters maxWidth="md">
       <ViewControlsContainer>
-        <ViewFoo
+        <ViewUnits
           aria-label="Temperature units"
           name="temp-units"
           value={units}
           control={<Radio color="primary" />}
           celciusNode="Celcius"
           fahrenheitNode="Fahrenheit"
+          onChange={event =>
+            dispatch(ChangeUnits(event.currentTarget.value as TempUnits))
+          }
         />
 
         <ViewNavigation
@@ -150,14 +212,19 @@ const ViewSucceed: React.FC<{
 
 export const View: React.FC<{
   state: State
-}> = ({ state }) =>
+  dispatch: Dispatch<Action>
+}> = ({ state, dispatch }) =>
   state.weekForecast.cata({
     Loading: () => <SkeletonForecast />,
 
-    Failure: error => <div>{error}</div>,
+    Failure: () => <div>error</div>,
 
     Succeed: weekForecast => (
-      <ViewSucceed units={state.units} weekForecast={weekForecast} />
+      <ViewSucceed
+        units={state.units}
+        weekForecast={weekForecast}
+        dispatch={dispatch}
+      />
     )
   })
 
@@ -170,7 +237,7 @@ const SkeletNavButton: React.FC = () => (
 const SkeletonForecast: React.FC = React.memo(() => (
   <Container disableGutters maxWidth="md">
     <ViewControlsContainer>
-      <ViewFoo
+      <ViewUnits
         control={
           <Box
             width="42px"

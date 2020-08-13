@@ -1,7 +1,9 @@
 import React from 'react'
+import { action } from '@storybook/addon-actions'
 import dayjs from 'dayjs'
 import RemoteData from 'frctl/RemoteData'
 
+import { Error as HttpError } from 'httpBuilder'
 import { TempUnits, DayForecast } from 'api'
 import * as Forecast from './index'
 
@@ -10,13 +12,16 @@ export default {
   component: Forecast.View
 }
 
+const initial: Forecast.State = Forecast.init('Munich')[0]
+
 const makeDayForecast = (datestring: string, temp: number): DayForecast => ({
-  date: dayjs(datestring),
-  temp,
-  details: []
+  getDate: () => dayjs(datestring),
+  getAverageTemp: () => temp,
+  getProbes: () => []
 })
 
 const knobState = (): Forecast.State => ({
+  ...initial,
   units: TempUnits.Fahrenheit,
   weekForecast: RemoteData.Succeed([
     makeDayForecast('09-02-1993', 23),
@@ -28,16 +33,19 @@ const knobState = (): Forecast.State => ({
 })
 
 export const Loading: React.FC = () => (
-  <Forecast.View state={Forecast.initial} />
+  <Forecast.View state={initial} dispatch={action('dispatch')} />
 )
 
-export const Succeed: React.FC = () => <Forecast.View state={knobState()} />
+export const Succeed: React.FC = () => (
+  <Forecast.View state={knobState()} dispatch={action('dispatch')} />
+)
 
 export const Failure: React.FC = () => (
   <Forecast.View
     state={{
-      ...Forecast.initial,
-      weekForecast: RemoteData.Failure('Error')
+      ...initial,
+      weekForecast: RemoteData.Failure(HttpError.NetworkError)
     }}
+    dispatch={action('dispatch')}
   />
 )

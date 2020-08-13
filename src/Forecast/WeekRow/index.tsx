@@ -48,7 +48,7 @@ const WeekRow: React.FC<{
   <ViewGrid pageSize={pageSize} shiftIndex={shiftIndex}>
     {weekForecast.map(forecast => (
       <DayCard
-        key={forecast.date.toISOString()}
+        key={forecast.getDate().toISOString()}
         units={units}
         forecast={forecast}
       />

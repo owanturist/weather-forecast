@@ -33,8 +33,8 @@ const DayCard: React.FC<{
   forecast: DayForecast
 }> = React.memo(({ units, forecast }) => (
   <ViewCard
-    tempNode={forecast.temp.toString() + unitsToLabel(units)}
-    dateNode={forecast.date.format('DD MMM YY')}
+    tempNode={forecast.getAverageTemp().toString() + unitsToLabel(units)}
+    dateNode={forecast.getDate().format('DD MMM YY')}
   />
 ))
 

@@ -11,7 +11,7 @@ import * as App from 'App'
 ReactDOM.render(
   <React.StrictMode>
     <CssBaseline>
-      <Provider init={App.init} update={App.udpate} view={App.View} />
+      <Provider init={App.init('Munich')} update={App.update} view={App.View} />
     </CssBaseline>
   </React.StrictMode>,
   document.getElementById('root')

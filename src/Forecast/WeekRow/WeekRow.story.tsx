@@ -11,9 +11,9 @@ export default {
 }
 
 const makeDayForecast = (datestring: string, temp: number): DayForecast => ({
-  date: dayjs(datestring),
-  temp,
-  details: []
+  getDate: () => dayjs(datestring),
+  getAverageTemp: () => temp,
+  getProbes: () => []
 })
 
 const styleContainer: React.CSSProperties = {

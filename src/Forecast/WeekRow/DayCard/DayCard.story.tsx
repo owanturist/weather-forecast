@@ -28,11 +28,16 @@ const knobDayjs = (label: string, initialDate: Date): Dayjs => {
   return dayjs(date(label, initialDate))
 }
 
-const knobDayForecast = (): DayForecast => ({
-  date: knobDayjs('Date', new Date(2020, 7, 14)),
-  temp: number('Temperature', 30),
-  details: []
-})
+const knobDayForecast = (): DayForecast => {
+  const date_ = knobDayjs('Date', new Date(2020, 7, 14))
+  const temp = number('Temperature', 30)
+
+  return {
+    getDate: () => date_,
+    getAverageTemp: () => temp,
+    getProbes: () => []
+  }
+}
 
 export const Initial: React.FC = () => (
   <DayCard
