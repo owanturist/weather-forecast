@@ -52,9 +52,9 @@ class DayForecastImpl implements DayForecast {
   }
 }
 
-export const dayForecastDecoder: Decoder<Array<DayForecast>> = Decode.list(
-  probeDecoder
-).map(probes => {
+export const __test_only_initDayForecast__ = (
+  probes: Array<DayForecastProbe>
+): Array<DayForecast> => {
   if (probes.length === 0) {
     return []
   }
@@ -73,5 +73,13 @@ export const dayForecastDecoder: Decoder<Array<DayForecast>> = Decode.list(
     }
   }
 
+  if (currentDayProbes.length > 0) {
+    acc.push(new DayForecastImpl(currentDayProbes))
+  }
+
   return acc
-})
+}
+
+export const dayForecastDecoder: Decoder<Array<DayForecast>> = Decode.list(
+  probeDecoder
+).map(__test_only_initDayForecast__)
