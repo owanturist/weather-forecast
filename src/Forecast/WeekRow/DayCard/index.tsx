@@ -45,6 +45,7 @@ const DayCard: React.FC<{
 }> = React.memo(({ active, unitsChanging, units, forecast, onShowDetails }) => (
   <ViewCard
     data-cy="day-card__root"
+    raised={active}
     tempNode={
       unitsChanging ? (
         <Skeleton />

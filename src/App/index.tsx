@@ -57,25 +57,29 @@ export const update = (
 export const View: React.FC<{ state: State; dispatch: Dispatch<Action> }> = ({
   state,
   dispatch
-}) => (
-  <Box
-    display="flex"
-    minHeight="100%"
-    justifyContent="center"
-    alignItems="center"
-    padding={2}
-  >
-    <Container disableGutters maxWidth="md">
-      <Box bgcolor="background.paper">
-        <Forecast.View
-          pageSize={3}
-          state={state.forecast}
-          dispatch={React.useCallback(
-            action => dispatch(ForecastAction(action)),
-            [dispatch]
-          )}
-        />
-      </Box>
-    </Container>
-  </Box>
-)
+}) => {
+  const forecastDispatch = React.useCallback(
+    action => dispatch(ForecastAction(action)),
+    [dispatch]
+  )
+
+  return (
+    <Box
+      display="flex"
+      minHeight="100%"
+      justifyContent="center"
+      alignItems="center"
+      padding={2}
+    >
+      <Container disableGutters maxWidth="md">
+        <Box bgcolor="background.paper">
+          <Forecast.View
+            pageSize={3}
+            state={state.forecast}
+            dispatch={forecastDispatch}
+          />
+        </Box>
+      </Container>
+    </Box>
+  )
+}

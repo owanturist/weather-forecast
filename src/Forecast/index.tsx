@@ -105,7 +105,7 @@ export const update = (
 // V I E W
 
 const ViewControlsContainer: React.FC = ({ children }) => (
-  <Box paddingX={2} paddingY={1}>
+  <Box paddingX={2} paddingTop={1}>
     {children}
   </Box>
 )
@@ -117,7 +117,7 @@ const ViewNavigationContainer: React.FC = ({ children }) => (
 )
 
 const ViewWeekRowContainer: React.FC = ({ children }) => (
-  <Box padding={1} className={styles.weekRowContainer}>
+  <Box paddingX={1} paddingY={3} className={styles.weekRowContainer}>
     {children}
   </Box>
 )
@@ -185,50 +185,9 @@ const ViewNavigation: React.FC<{
     </ViewNavigationButton>
   </ViewNavigationContainer>
 ))
-const data = [
-  {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400
-  },
-  {
-    name: 'Page B',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210
-  },
-  {
-    name: 'Page C',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290
-  },
-  {
-    name: 'Page D',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000
-  },
-  {
-    name: 'Page E',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181
-  },
-  {
-    name: 'Page F',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500
-  },
-  {
-    name: 'Page G',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100
-  }
-]
+
+const radioControl = <Radio color="primary" />
+
 const ViewSucceed: React.FC<{
   pageSize: number
   units: TempUnits
@@ -242,6 +201,26 @@ const ViewSucceed: React.FC<{
     activeIndex: 0
   })
 
+  const onPrevClick = React.useCallback(
+    () => setState(state => ({ ...state, shiftIndex: state.shiftIndex - 1 })),
+    []
+  )
+  const onNextClick = React.useCallback(
+    () => setState(state => ({ ...state, shiftIndex: state.shiftIndex + 1 })),
+    []
+  )
+  const onShowDetails = React.useCallback(
+    index =>
+      setState(state => ({ ...state, activeIndex: index - state.shiftIndex })),
+    []
+  )
+  const onChangeUnits = React.useCallback(
+    event => dispatch(ChangeUnits(event.currentTarget.value as TempUnits)),
+    [dispatch]
+  )
+
+  const activeDaySegments = weekForecast[shiftIndex + activeIndex].getSegments()
+
   return (
     <div data-cy="forecast__root">
       <ViewControlsContainer>
@@ -249,40 +228,17 @@ const ViewSucceed: React.FC<{
           aria-label="Temperature units"
           name="temp-units"
           value={units}
-          control={React.useMemo(
-            () => (
-              <Radio color="primary" />
-            ),
-            []
-          )}
+          control={radioControl}
           celciusNode="Celcius"
           fahrenheitNode="Fahrenheit"
-          onChange={React.useCallback(
-            event =>
-              dispatch(ChangeUnits(event.currentTarget.value as TempUnits)),
-            [dispatch]
-          )}
+          onChange={onChangeUnits}
         />
 
         <ViewNavigation
           prevVisible={shiftIndex > 0}
           nextVisible={shiftIndex < weekForecast.length - pageSize}
-          onPrevClick={React.useCallback(
-            () =>
-              setState(state => ({
-                ...state,
-                shiftIndex: state.shiftIndex - 1
-              })),
-            []
-          )}
-          onNextClick={React.useCallback(
-            () =>
-              setState(state => ({
-                ...state,
-                shiftIndex: state.shiftIndex + 1
-              })),
-            []
-          )}
+          onPrevClick={onPrevClick}
+          onNextClick={onNextClick}
         />
       </ViewControlsContainer>
 
@@ -294,19 +250,12 @@ const ViewSucceed: React.FC<{
           units={units}
           unitsChanging={unitsChanging}
           weekForecast={weekForecast}
-          onShowDetails={React.useCallback(
-            index =>
-              setState(state => ({
-                ...state,
-                activeIndex: index - state.shiftIndex
-              })),
-            []
-          )}
+          onShowDetails={onShowDetails}
         />
       </ViewWeekRowContainer>
 
-      <BarChart width={500} height={500} data={data}>
-        <Bar fill="#c09" dataKey="pv" />
+      <BarChart width={500} height={500} data={activeDaySegments}>
+        <Bar fill="#c09" dataKey="temp" />
       </BarChart>
     </div>
   )
@@ -316,16 +265,13 @@ export const View: React.FC<{
   pageSize: number
   state: State
   dispatch: Dispatch<Action>
-}> = ({ pageSize, state, dispatch }) =>
-  state.weekForecast.cata({
+}> = React.memo(({ pageSize, state, dispatch }) => {
+  const onRetry = React.useCallback(() => dispatch(LoadForecast), [dispatch])
+
+  return state.weekForecast.cata({
     Loading: () => <SkeletonForecast pageSize={pageSize} />,
 
-    Failure: error => (
-      <ErrorReport
-        error={error}
-        onRetry={React.useCallback(() => dispatch(LoadForecast), [])}
-      />
-    ),
+    Failure: error => <ErrorReport error={error} onRetry={onRetry} />,
 
     Succeed: weekForecast => (
       <ViewSucceed
@@ -337,6 +283,7 @@ export const View: React.FC<{
       />
     )
   })
+})
 
 // S K E L E T O N
 
