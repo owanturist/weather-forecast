@@ -318,13 +318,22 @@ const ViewFailure: React.FC<{
           Something went wrong and our apps seems don't communicate well...
         </Typography>
 
-        <pre>
-          {decodeError
-            .stringify(4)
-            .replace(/\\"/g, '"')
-            .replace(/\s{3,}"/, '\n\n"')
-            .replace(/\\n/g, '\n')}
-        </pre>
+        <Box
+          display="flex"
+          justifyContent="center"
+          overflow="auto"
+          maxWidth="100%"
+          padding={2}
+          bgcolor=""
+        >
+          <pre className={styles.jsonCode}>
+            {decodeError
+              .stringify(4)
+              .replace(/\\"/g, '"')
+              .replace(/\s{3,}"/, '\n\n"')
+              .replace(/\\n/g, '\n')}
+          </pre>
+        </Box>
       </ViewFailureContainer>
     )
   })
