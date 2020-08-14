@@ -104,7 +104,9 @@ export const update = (
 // V I E W
 
 const ViewControlsContainer: React.FC = ({ children }) => (
-  <Box padding={1}>{children}</Box>
+  <Box paddingX={2} paddingY={1}>
+    {children}
+  </Box>
 )
 
 const ViewNavigationContainer: React.FC = ({ children }) => (
