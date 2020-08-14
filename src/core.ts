@@ -1,10 +1,14 @@
 import {
-  Action,
+  Action as ReduxAction,
   PreloadedState,
   StoreEnhancer,
   StoreCreator,
   Store
 } from 'redux'
+
+import { once } from 'utils'
+
+export type Action = ReduxAction
 
 /**
  * Effect allows to call Action in async moment.
@@ -20,22 +24,41 @@ export type Effect<A extends Action> = (dispatch: Dispatch<A>) => void
 
 export type Effects<A extends Action> = Array<Effect<A>>
 
+export const mapEffect = <A extends Action, R extends Action>(
+  tagger: (action: A) => R,
+  effect: Effect<A>
+): Effect<R> => {
+  return dispatch => effect(action => dispatch(tagger(action)))
+}
+
+export const mapEffects = <A extends Action, R extends Action>(
+  tagger: (action: A) => R,
+  effects: Effects<A>
+): Effects<R> => {
+  return effects.map(effect => mapEffect(tagger, effect))
+}
+
 export type Dispatch<A extends Action> = (action: A) => void
 
-export const setupEffects = <S, A extends Action, Ext, StateExt>(
+export const createStoreWithEffects = <S, A extends Action, Ext, StateExt>(
   createStore: StoreCreator
 ) => (
   update: (action: A, state: S) => [S, Effects<A>],
   [initialState, initialEffects]: [S, Effects<A>],
   enhancer?: StoreEnhancer<Ext, StateExt>
 ): Store<S, A> => {
-  const effectReducer = (state: S, action: A): S => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    const [nextState, effects] = update(action, state) || [initialState, []]
+  let initialised = false
 
-    if (effects.length > 0) {
-      executeEffects(effects)
+  const effectReducer = (state: S, action: A): S => {
+    if (!initialised) {
+      initialised = true
+
+      return state
     }
+
+    const [nextState, effects] = update(action, state)
+
+    executeEffects(effects)
 
     return nextState
   }
@@ -48,7 +71,7 @@ export const setupEffects = <S, A extends Action, Ext, StateExt>(
 
   const executeEffects = (effects: Effects<A>): void => {
     for (const effect of effects) {
-      effect(store.dispatch)
+      effect(once(store.dispatch))
     }
   }
 

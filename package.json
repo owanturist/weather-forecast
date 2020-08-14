@@ -13,6 +13,7 @@
     "analyze": "source-map-explorer 'build/static/js/**/*.js' --gzip",
     "storybook": "start-storybook -p 9009 -s public",
     "storybook:build": "build-storybook -s public",
+    "cy:app": "REACT_APP_HTTP_TIMEOUT=200 yarn dev",
     "cy:open": "cypress open",
     "cy:run": "cypress run"
   },
@@ -20,7 +21,7 @@
     "hooks": {
       "prepare-commit-msg": "./scripts/git-commit-message.sh $HUSKY_GIT_PARAMS",
       "pre-commit": "npm run compile & lint-staged",
-      "pre-push": "npm run test -- --watchAll=false & npm run cy:run"
+      "pre-push": "npm run test -- --passWithNoTests --watchAll=false & npm run cy:run"
     }
   },
   "lint-staged": {
@@ -32,14 +33,17 @@
     ]
   },
   "dependencies": {
-    "@emotion/styled": "^10.0.27",
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
-    "emotion": "^10.0.27",
-    "normalize.css": "^8.0.1",
+    "dayjs": "^1.8.33",
+    "frctl": "^2.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.8"
   },
   "devDependencies": {
     "@bahmutov/add-typescript-to-cypress": "^2.1.2",

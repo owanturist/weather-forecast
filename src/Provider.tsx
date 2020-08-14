@@ -1,6 +1,8 @@
 import React from 'react'
 import { createStore, Action } from 'redux'
-import { Dispatch, Effects, setupEffects } from 'core'
+import { composeWithDevTools } from 'redux-devtools-extension'
+
+import { Dispatch, Effects, createStoreWithEffects } from 'core'
 
 export type Props<S, A extends Action> = {
   init: [S, Effects<A>]
@@ -19,9 +21,10 @@ export const Provider = React.memo(
     }>(null)
 
     React.useEffect(() => {
-      const store = setupEffects<S, A, unknown, unknown>(createStore)(
+      const store = createStoreWithEffects<S, A, unknown, unknown>(createStore)(
         update,
-        init
+        init,
+        composeWithDevTools()
       )
 
       const unsubscribe = store.subscribe(() => {
