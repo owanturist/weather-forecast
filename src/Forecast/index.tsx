@@ -5,7 +5,6 @@ import Radio from '@material-ui/core/Radio'
 import RadioGroup, { RadioGroupProps } from '@material-ui/core/RadioGroup'
 import FormControl from '@material-ui/core/FormControl'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Button from '@material-ui/core/Button'
 import IconButton, { IconButtonProps } from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
@@ -17,8 +16,8 @@ import { Effects, Dispatch } from 'core'
 import { TempUnits, DayForecast, getFiveDayForecastForCity } from 'api'
 import { Error as HttpError } from 'httpBuilder'
 import WeekRow, { SkeletonWeekRow } from './WeekRow'
+import ErrorReport from './ErrorReport'
 import styles from './styles.module.css'
-import { Typography } from '@material-ui/core'
 
 // S T A T E
 
@@ -232,113 +231,6 @@ const ViewSucceed: React.FC<{
   )
 })
 
-const ViewRetrySection: React.FC<{
-  onRetry(): void
-}> = ({ onRetry: onClick }) => (
-  <Box display="flex" justifyContent="center">
-    <Button
-      data-cy="forecast__retry"
-      aria-label="Retry forecast request"
-      variant="contained"
-      color="primary"
-      onClick={onClick}
-    >
-      Try again
-    </Button>
-  </Box>
-)
-
-const ViewFailureContainer: React.FC<{
-  title: ReactNode
-}> = ({ title, children }) => (
-  <Box data-cy="forecast__report" padding={6}>
-    <Typography variant="h4" align="center">
-      {title}
-    </Typography>
-
-    <Box marginTop={2}>{children}</Box>
-  </Box>
-)
-
-const ViewFailure: React.FC<{
-  error: HttpError
-  dispatch: Dispatch<Action>
-}> = React.memo(({ error, dispatch }) =>
-  error.cata({
-    Timeout: () => (
-      <ViewFailureContainer title="You are facing a Timeout issue">
-        <Typography paragraph align="center">
-          It takes too long to get a response so please check your Internect
-          connection and try again.
-        </Typography>
-
-        <ViewRetrySection onRetry={() => dispatch(LoadForecast)} />
-      </ViewFailureContainer>
-    ),
-
-    NetworkError: () => (
-      <ViewFailureContainer title="You are facing a Network Error">
-        <Typography paragraph align="center">
-          Pleace check your Internet connection and try again.
-        </Typography>
-
-        <ViewRetrySection onRetry={() => dispatch(LoadForecast)} />
-      </ViewFailureContainer>
-    ),
-
-    BadUrl: url => (
-      <ViewFailureContainer title="Oops... we broke something...">
-        <Typography paragraph align="center">
-          It looks like the app hits a wrong endpoint <code>{url}</code>.
-        </Typography>
-        <Typography paragraph align="center">
-          We are fixing the issue.
-        </Typography>
-      </ViewFailureContainer>
-    ),
-
-    BadStatus: ({ statusCode }) => {
-      const [side, role] =
-        statusCode < 500 ? ['Client', 'frontend'] : ['Server', 'backend']
-
-      return (
-        <ViewFailureContainer
-          title={`You are facing an unexpected ${side} side Error ${statusCode}!`}
-        >
-          <Typography paragraph align="center">
-            Our {role} developers are fixing the issue.
-          </Typography>
-        </ViewFailureContainer>
-      )
-    },
-
-    BadBody: decodeError => (
-      <ViewFailureContainer title="You are facing an unexpected Response Body Error!">
-        <Typography paragraph align="center">
-          Something went wrong and our apps seems don't communicate well...
-        </Typography>
-
-        <Box
-          display="flex"
-          justifyContent="center"
-          overflow="auto"
-          maxWidth="100%"
-          padding={2}
-          bgcolor=""
-        >
-          <pre className={styles.jsonCode}>
-            {decodeError
-              .stringify(4)
-              .replace(/\\"/g, '"')
-              .replace(/\s{3,}"/, '\n\n"')
-              .replace(/\\n/g, '\n')}
-          </pre>
-        </Box>
-      </ViewFailureContainer>
-    )
-  })
-)
-
 export const View: React.FC<{
   pageSize: number
   state: State
@@ -347,7 +239,12 @@ export const View: React.FC<{
   state.weekForecast.cata({
     Loading: () => <SkeletonForecast pageSize={pageSize} />,
 
-    Failure: error => <ViewFailure error={error} dispatch={dispatch} />,
+    Failure: error => (
+      <ErrorReport
+        error={error}
+        onRetry={React.useCallback(() => dispatch(LoadForecast), [])}
+      />
+    ),
 
     Succeed: weekForecast => (
       <ViewSucceed

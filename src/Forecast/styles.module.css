@@ -6,9 +6,3 @@
 .radioGroup {
   justify-content: space-between;
 }
-
-.jsonCode {
-  margin: 0;
-  max-width: 100%;
-  font-size: 12px;
-}

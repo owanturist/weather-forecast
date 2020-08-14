@@ -32,7 +32,9 @@ describe('App initialisation', () => {
 
     cy.visit('/')
     cy.wait('@getForecast')
-    cy.getcy('forecast__report').contains('BadStatus 500').should('be.visible')
+    cy.getcy('forecast-error-report__root')
+      .contains('You are facing an unexpected Server side Error 500!')
+      .should('be.visible')
   })
 
   it('can retry when fails by timeout', () => {
