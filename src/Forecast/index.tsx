@@ -1,4 +1,4 @@
-import React, { ReactNode, ReactElement } from 'react'
+import React, { ReactNode, ReactElement, Suspense } from 'react'
 import Zoom from '@material-ui/core/Zoom'
 import Box from '@material-ui/core/Box'
 import Radio from '@material-ui/core/Radio'
@@ -9,7 +9,6 @@ import IconButton, { IconButtonProps } from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import Skeleton from '@material-ui/lab/Skeleton'
-import { BarChart, Bar } from 'recharts'
 import RemoteData from 'frctl/RemoteData'
 import Either from 'frctl/Either'
 
@@ -20,6 +19,7 @@ import DayForecast from 'entities/DayForecast'
 import { Error as HttpError } from 'httpBuilder'
 import WeekRow, { SkeletonWeekRow } from './WeekRow'
 import ErrorReport from './ErrorReport'
+import SkeletonChart from './Chart/Skeleton'
 import styles from './styles.module.css'
 
 // S T A T E
@@ -186,6 +186,8 @@ const ViewNavigation: React.FC<{
   </ViewNavigationContainer>
 ))
 
+const ViewChart = React.lazy(() => import('./Chart'))
+
 const radioControl = <Radio color="primary" />
 
 const ViewSucceed: React.FC<{
@@ -254,9 +256,9 @@ const ViewSucceed: React.FC<{
         />
       </ViewWeekRowContainer>
 
-      <BarChart width={500} height={500} data={activeDaySegments}>
-        <Bar fill="#c09" dataKey="temp" />
-      </BarChart>
+      <Suspense fallback={<SkeletonChart />}>
+        <ViewChart segments={activeDaySegments} />
+      </Suspense>
     </div>
   )
 })
