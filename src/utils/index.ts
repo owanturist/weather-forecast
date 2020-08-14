@@ -1,7 +1,3 @@
-export const clamp = (min: number, max: number, x: number): number => {
-  return Math.max(min, Math.min(max, x))
-}
-
 /**
  * Tricky helper to handle tricky Cata default '_' case.
  * In Cata we assume that default case is always present
@@ -34,12 +30,12 @@ export const once = <A extends Array<unknown>>(
   }
 }
 
-export const round = (float: number, digits?: number): number => {
-  if (typeof digits === 'undefined') {
+export const round = (float: number, precision?: number): number => {
+  if (typeof precision === 'undefined' || precision < 1) {
     return Math.round(float)
   }
 
-  const pow = 10 ** digits
+  const pow = 10 ** precision
 
   return Math.round(pow * float) / pow
 }
