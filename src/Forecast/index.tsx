@@ -127,7 +127,7 @@ const ViewUnits: React.FC<
     celciusNode: ReactNode
     fahrenheitNode: ReactNode
   }
-> = ({ control, celciusNode, fahrenheitNode, ...props }) => (
+> = React.memo(({ control, celciusNode, fahrenheitNode, ...props }) => (
   <FormControl component="fieldset" fullWidth>
     <RadioGroup row className={styles.radioGroup} {...props}>
       <FormControlLabel
@@ -146,7 +146,7 @@ const ViewUnits: React.FC<
       />
     </RadioGroup>
   </FormControl>
-)
+))
 
 const ViewNavigationButton: React.FC<
   IconButtonProps & {
@@ -202,23 +202,32 @@ const ViewSucceed: React.FC<{
           aria-label="Temperature units"
           name="temp-units"
           value={units}
-          control={<Radio color="primary" />}
+          control={React.useMemo(
+            () => (
+              <Radio color="primary" />
+            ),
+            []
+          )}
           celciusNode="Celcius"
           fahrenheitNode="Fahrenheit"
-          onChange={event =>
-            dispatch(ChangeUnits(event.currentTarget.value as TempUnits))
-          }
+          onChange={React.useCallback(
+            event =>
+              dispatch(ChangeUnits(event.currentTarget.value as TempUnits)),
+            [dispatch]
+          )}
         />
 
         <ViewNavigation
           prevVisible={shiftIndex > 0}
           nextVisible={shiftIndex < weekForecast.length - pageSize}
-          onPrevClick={React.useCallback(() => setShiftIndex(shiftIndex - 1), [
-            shiftIndex
-          ])}
-          onNextClick={React.useCallback(() => setShiftIndex(shiftIndex + 1), [
-            shiftIndex
-          ])}
+          onPrevClick={React.useCallback(
+            () => setShiftIndex(index => index - 1),
+            []
+          )}
+          onNextClick={React.useCallback(
+            () => setShiftIndex(index => index + 1),
+            []
+          )}
         />
       </ViewControlsContainer>
 
