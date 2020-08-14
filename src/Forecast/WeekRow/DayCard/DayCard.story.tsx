@@ -1,6 +1,6 @@
 import React from 'react'
 import dayjs, { Dayjs } from 'dayjs'
-import { date, number, optionsKnob } from '@storybook/addon-knobs'
+import { boolean, date, number, optionsKnob } from '@storybook/addon-knobs'
 
 import { TempUnits, DayForecast } from 'api'
 import DayCard, { SkeletonDayCard } from './index'
@@ -41,6 +41,7 @@ const knobDayForecast = (): DayForecast => {
 
 export const Initial: React.FC = () => (
   <DayCard
+    unitsChanging={boolean('Units changing', false)}
     units={knobUnits('Units', TempUnits.Celcius)}
     forecast={knobDayForecast()}
   />

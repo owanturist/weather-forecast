@@ -23,11 +23,13 @@ import styles from './styles.module.css'
 
 export type State = {
   units: TempUnits
+  unitsChanging: boolean
   weekForecast: RemoteData<HttpError, Array<DayForecast>>
 }
 
 const initial: State = {
   units: TempUnits.Fahrenheit,
+  unitsChanging: false,
   weekForecast: RemoteData.Loading
 }
 
@@ -65,21 +67,32 @@ export const update = (
   switch (action.type) {
     case 'LoadForecast': {
       return [
-        { ...state, weekForecast: RemoteData.Loading },
+        {
+          ...state,
+          weekForecast: RemoteData.Loading
+        },
         [getFiveDayForecastForCity(state.units, city).send(LoadForecastDone)]
       ]
     }
 
     case 'LoadForecastDone': {
       return [
-        { ...state, weekForecast: RemoteData.fromEither(action.result) },
+        {
+          ...state,
+          unitsChanging: false,
+          weekForecast: RemoteData.fromEither(action.result)
+        },
         []
       ]
     }
 
     case 'ChangeUnits': {
       return [
-        { ...state, units: action.units },
+        {
+          ...state,
+          unitsChanging: true,
+          units: action.units
+        },
         [getFiveDayForecastForCity(action.units, city).send(LoadForecastDone)]
       ]
     }
@@ -93,7 +106,7 @@ const ViewControlsContainer: React.FC = ({ children }) => (
 )
 
 const ViewNavigationContainer: React.FC = ({ children }) => (
-  <Box display="flex" justifyContent="space-between">
+  <Box display="flex" justifyContent="space-between" marginY={6}>
     {children}
   </Box>
 )
@@ -171,9 +184,11 @@ const ViewNavigation: React.FC<{
 const ViewSucceed: React.FC<{
   pageSize: number
   units: TempUnits
+  unitsChanging: boolean
   weekForecast: Array<DayForecast>
   dispatch: Dispatch<Action>
-}> = React.memo(({ pageSize, units, weekForecast, dispatch }) => {
+}> = React.memo(props => {
+  const { pageSize, units, unitsChanging, weekForecast, dispatch } = props
   const [shiftIndex, setShiftIndex] = React.useState(0)
 
   return (
@@ -208,6 +223,7 @@ const ViewSucceed: React.FC<{
           pageSize={pageSize}
           shiftIndex={shiftIndex}
           units={units}
+          unitsChanging={unitsChanging}
           weekForecast={weekForecast}
         />
       </ViewWeekRowContainer>
@@ -271,6 +287,7 @@ export const View: React.FC<{
         <ViewSucceed
           pageSize={pageSize}
           units={state.units}
+          unitsChanging={state.unitsChanging}
           weekForecast={weekForecast}
           dispatch={dispatch}
         />

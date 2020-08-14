@@ -20,23 +20,30 @@ const ViewCard: React.FC<
     tempNode: ReactNode
     dateNode: ReactNode
   }
-> = ({ tempNode: tempComponent, dateNode: dateComponent, ...props }) => (
+> = ({ tempNode, dateNode, ...props }) => (
   <Card {...props}>
     <CardContent>
-      <Typography variant="h4">{tempComponent}</Typography>
+      <Typography variant="h4">{tempNode}</Typography>
 
-      <Typography variant="subtitle1">{dateComponent}</Typography>
+      <Typography variant="subtitle1">{dateNode}</Typography>
     </CardContent>
   </Card>
 )
 
 const DayCard: React.FC<{
+  unitsChanging?: boolean
   units: TempUnits
   forecast: DayForecast
-}> = React.memo(({ units, forecast }) => (
+}> = React.memo(({ unitsChanging, units, forecast }) => (
   <ViewCard
     data-cy="day-card__root"
-    tempNode={forecast.getAverageTemp().toString() + unitsToLabel(units)}
+    tempNode={
+      unitsChanging ? (
+        <Skeleton />
+      ) : (
+        forecast.getAverageTemp().toString() + unitsToLabel(units)
+      )
+    }
     dateNode={forecast.getDate().format('DD MMM YY')}
   />
 ))

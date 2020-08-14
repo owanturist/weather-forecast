@@ -1,5 +1,6 @@
 import React from 'react'
 import { action } from '@storybook/addon-actions'
+import { boolean } from '@storybook/addon-knobs'
 import dayjs from 'dayjs'
 import RemoteData from 'frctl/RemoteData'
 
@@ -22,6 +23,7 @@ const makeDayForecast = (datestring: string, temp: number): DayForecast => ({
 
 const knobState = (): Forecast.State => ({
   ...initial,
+  unitsChanging: boolean('Units changing', false),
   units: TempUnits.Fahrenheit,
   weekForecast: RemoteData.Succeed([
     makeDayForecast('09-02-1993', 23),

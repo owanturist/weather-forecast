@@ -1,6 +1,6 @@
 import React from 'react'
 import dayjs from 'dayjs'
-import { number } from '@storybook/addon-knobs'
+import { number, boolean } from '@storybook/addon-knobs'
 
 import { TempUnits, DayForecast } from 'api'
 import WeekRow, { SkeletonWeekRow } from './index'
@@ -33,6 +33,7 @@ export const Initial: React.FC = () => (
       shiftIndex={number('Shift Index', 0, {
         min: 0
       })}
+      unitsChanging={boolean('Units changing', false)}
       units={TempUnits.Celcius}
       weekForecast={[
         makeDayForecast('09-02-1993', 23),
