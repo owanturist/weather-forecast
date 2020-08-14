@@ -42,19 +42,31 @@ const ViewGrid: React.FC<{
 
 const WeekRow: React.FC<{
   pageSize: number
+  activeIndex: number
   shiftIndex: number
   unitsChanging?: boolean
   units: TempUnits
   weekForecast: Array<DayForecast>
+  onShowDetails(index: number): void
 }> = React.memo(
-  ({ pageSize, shiftIndex, unitsChanging, units, weekForecast }) => (
+  ({
+    pageSize,
+    activeIndex,
+    shiftIndex,
+    unitsChanging,
+    units,
+    weekForecast,
+    onShowDetails
+  }) => (
     <ViewGrid pageSize={pageSize} shiftIndex={shiftIndex}>
-      {weekForecast.map(forecast => (
+      {weekForecast.map((forecast, index) => (
         <DayCard
           key={forecast.getDate().toISOString()}
+          active={index === activeIndex}
           unitsChanging={unitsChanging}
           units={units}
           forecast={forecast}
+          onShowDetails={() => onShowDetails(index)}
         />
       ))}
     </ViewGrid>

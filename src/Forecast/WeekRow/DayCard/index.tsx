@@ -1,6 +1,8 @@
 import React, { ReactNode } from 'react'
 import Card, { CardProps } from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
+import CardActions from '@material-ui/core/CardActions'
+import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import Skeleton from '@material-ui/lab/Skeleton'
 
@@ -18,34 +20,50 @@ const unitsToLabel = (units: TempUnits): string => {
 
 const ViewCard: React.FC<
   CardProps & {
-    temp: ReactNode
-    date: ReactNode
+    tempNode: ReactNode
+    dateNode: ReactNode
+    actionNode: ReactNode
   }
-> = ({ temp, date, ...props }) => (
+> = ({ tempNode, dateNode, actionNode, ...props }) => (
   <Card {...props}>
     <CardContent>
-      <Typography variant="h4">{temp}</Typography>
+      <Typography variant="h4">{tempNode}</Typography>
 
-      <Typography variant="subtitle1">{date}</Typography>
+      <Typography variant="subtitle1">{dateNode}</Typography>
     </CardContent>
+
+    <CardActions>{actionNode}</CardActions>
   </Card>
 )
 
 const DayCard: React.FC<{
+  active?: boolean
   unitsChanging?: boolean
   units: TempUnits
   forecast: DayForecast
-}> = React.memo(({ unitsChanging, units, forecast }) => (
+  onShowDetails?(): void
+}> = React.memo(({ active, unitsChanging, units, forecast, onShowDetails }) => (
   <ViewCard
     data-cy="day-card__root"
-    temp={
+    tempNode={
       unitsChanging ? (
         <Skeleton />
       ) : (
         forecast.getAverageTemp().toString() + unitsToLabel(units)
       )
     }
-    date={forecast.getDate().format('DD MMM YY')}
+    dateNode={forecast.getDate().format('DD MMM YY')}
+    actionNode={
+      <Button
+        disabled={active}
+        color="primary"
+        size="small"
+        variant="contained"
+        onClick={onShowDetails}
+      >
+        Show Details
+      </Button>
+    }
   />
 ))
 
@@ -54,5 +72,9 @@ export default DayCard
 // S K E L E T O N
 
 export const SkeletonDayCard: React.FC = React.memo(() => (
-  <ViewCard temp={<Skeleton />} date={<Skeleton />} />
+  <ViewCard
+    tempNode={<Skeleton />}
+    dateNode={<Skeleton />}
+    actionNode={<Skeleton variant="rect" width="122px" height="30px" />}
+  />
 ))

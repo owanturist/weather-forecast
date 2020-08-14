@@ -9,6 +9,7 @@ import IconButton, { IconButtonProps } from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import Skeleton from '@material-ui/lab/Skeleton'
+import { BarChart, Bar } from 'recharts'
 import RemoteData from 'frctl/RemoteData'
 import Either from 'frctl/Either'
 
@@ -184,7 +185,50 @@ const ViewNavigation: React.FC<{
     </ViewNavigationButton>
   </ViewNavigationContainer>
 ))
-
+const data = [
+  {
+    name: 'Page A',
+    uv: 4000,
+    pv: 2400,
+    amt: 2400
+  },
+  {
+    name: 'Page B',
+    uv: 3000,
+    pv: 1398,
+    amt: 2210
+  },
+  {
+    name: 'Page C',
+    uv: 2000,
+    pv: 9800,
+    amt: 2290
+  },
+  {
+    name: 'Page D',
+    uv: 2780,
+    pv: 3908,
+    amt: 2000
+  },
+  {
+    name: 'Page E',
+    uv: 1890,
+    pv: 4800,
+    amt: 2181
+  },
+  {
+    name: 'Page F',
+    uv: 2390,
+    pv: 3800,
+    amt: 2500
+  },
+  {
+    name: 'Page G',
+    uv: 3490,
+    pv: 4300,
+    amt: 2100
+  }
+]
 const ViewSucceed: React.FC<{
   pageSize: number
   units: TempUnits
@@ -193,7 +237,10 @@ const ViewSucceed: React.FC<{
   dispatch: Dispatch<Action>
 }> = React.memo(props => {
   const { pageSize, units, unitsChanging, weekForecast, dispatch } = props
-  const [shiftIndex, setShiftIndex] = React.useState(0)
+  const [{ shiftIndex, activeIndex }, setState] = React.useState({
+    shiftIndex: 0,
+    activeIndex: 0
+  })
 
   return (
     <div data-cy="forecast__root">
@@ -221,11 +268,19 @@ const ViewSucceed: React.FC<{
           prevVisible={shiftIndex > 0}
           nextVisible={shiftIndex < weekForecast.length - pageSize}
           onPrevClick={React.useCallback(
-            () => setShiftIndex(index => index - 1),
+            () =>
+              setState(state => ({
+                ...state,
+                shiftIndex: state.shiftIndex - 1
+              })),
             []
           )}
           onNextClick={React.useCallback(
-            () => setShiftIndex(index => index + 1),
+            () =>
+              setState(state => ({
+                ...state,
+                shiftIndex: state.shiftIndex + 1
+              })),
             []
           )}
         />
@@ -235,11 +290,24 @@ const ViewSucceed: React.FC<{
         <WeekRow
           pageSize={pageSize}
           shiftIndex={shiftIndex}
+          activeIndex={shiftIndex + activeIndex}
           units={units}
           unitsChanging={unitsChanging}
           weekForecast={weekForecast}
+          onShowDetails={React.useCallback(
+            index =>
+              setState(state => ({
+                ...state,
+                activeIndex: index - state.shiftIndex
+              })),
+            []
+          )}
         />
       </ViewWeekRowContainer>
+
+      <BarChart width={500} height={500} data={data}>
+        <Bar fill="#c09" dataKey="pv" />
+      </BarChart>
     </div>
   )
 })

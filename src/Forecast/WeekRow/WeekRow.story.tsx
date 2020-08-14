@@ -5,6 +5,7 @@ import { number, boolean } from '@storybook/addon-knobs'
 import TempUnits from 'entities/TempUnits'
 import DayForecast from 'entities/DayForecast'
 import WeekRow, { SkeletonWeekRow } from './index'
+import { action } from '@storybook/addon-actions'
 
 export default {
   title: 'Forecast . WeekRow',
@@ -34,6 +35,9 @@ export const Initial: React.FC = () => (
       shiftIndex={number('Shift Index', 0, {
         min: 0
       })}
+      activeIndex={number('Active Index', 0, {
+        min: 0
+      })}
       unitsChanging={boolean('Units changing', false)}
       units={TempUnits.Celcius}
       weekForecast={[
@@ -46,6 +50,7 @@ export const Initial: React.FC = () => (
         makeDayForecast('09-08-1993', 21),
         makeDayForecast('09-09-1993', 22)
       ]}
+      onShowDetails={action('onShowDetails')}
     />
   </div>
 )
