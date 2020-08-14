@@ -17,15 +17,15 @@ const unitsToLabel = (units: TempUnits): string => {
 
 const ViewCard: React.FC<
   CardProps & {
-    tempNode: ReactNode
-    dateNode: ReactNode
+    temp: ReactNode
+    date: ReactNode
   }
-> = ({ tempNode, dateNode, ...props }) => (
+> = ({ temp, date, ...props }) => (
   <Card {...props}>
     <CardContent>
-      <Typography variant="h4">{tempNode}</Typography>
+      <Typography variant="h4">{temp}</Typography>
 
-      <Typography variant="subtitle1">{dateNode}</Typography>
+      <Typography variant="subtitle1">{date}</Typography>
     </CardContent>
   </Card>
 )
@@ -37,14 +37,14 @@ const DayCard: React.FC<{
 }> = React.memo(({ unitsChanging, units, forecast }) => (
   <ViewCard
     data-cy="day-card__root"
-    tempNode={
+    temp={
       unitsChanging ? (
         <Skeleton />
       ) : (
         forecast.getAverageTemp().toString() + unitsToLabel(units)
       )
     }
-    dateNode={forecast.getDate().format('DD MMM YY')}
+    date={forecast.getDate().format('DD MMM YY')}
   />
 ))
 
@@ -53,5 +53,5 @@ export default DayCard
 // S K E L E T O N
 
 export const SkeletonDayCard: React.FC = React.memo(() => (
-  <ViewCard tempNode={<Skeleton />} dateNode={<Skeleton />} />
+  <ViewCard temp={<Skeleton />} date={<Skeleton />} />
 ))

@@ -18,6 +18,7 @@ import { TempUnits, DayForecast, getFiveDayForecastForCity } from 'api'
 import { Error as HttpError } from 'httpBuilder'
 import WeekRow, { SkeletonWeekRow } from './WeekRow'
 import styles from './styles.module.css'
+import { Typography } from '@material-ui/core'
 
 // S T A T E
 
@@ -192,7 +193,7 @@ const ViewSucceed: React.FC<{
   const [shiftIndex, setShiftIndex] = React.useState(0)
 
   return (
-    <>
+    <div data-cy="forecast__root">
       <ViewControlsContainer>
         <ViewUnits
           aria-label="Temperature units"
@@ -227,42 +228,107 @@ const ViewSucceed: React.FC<{
           weekForecast={weekForecast}
         />
       </ViewWeekRowContainer>
-    </>
+    </div>
   )
 })
+
+const ViewRetrySection: React.FC<{
+  onRetry(): void
+}> = ({ onRetry: onClick }) => (
+  <Box display="flex" justifyContent="center">
+    <Button
+      data-cy="forecast__retry"
+      aria-label="Retry forecast request"
+      variant="contained"
+      color="primary"
+      onClick={onClick}
+    >
+      Try again
+    </Button>
+  </Box>
+)
+
+const ViewFailureContainer: React.FC<{
+  title: ReactNode
+}> = ({ title, children }) => (
+  <Box data-cy="forecast__report" padding={6}>
+    <Typography variant="h4" align="center">
+      {title}
+    </Typography>
+
+    <Box marginTop={2}>{children}</Box>
+  </Box>
+)
 
 const ViewFailure: React.FC<{
   error: HttpError
   dispatch: Dispatch<Action>
-}> = React.memo(({ error, dispatch }) => {
-  return error.cata({
+}> = React.memo(({ error, dispatch }) =>
+  error.cata({
     Timeout: () => (
-      <div>
-        Timeout{' '}
-        <Button
-          data-cy="forecast__retry"
-          color="secondary"
-          onClick={() => dispatch(LoadForecast)}
-        >
-          Try again
-        </Button>
-      </div>
+      <ViewFailureContainer title="You are facing a Timeout issue">
+        <Typography paragraph align="center">
+          It takes too long to get a response so please check your Internect
+          connection and try again.
+        </Typography>
+
+        <ViewRetrySection onRetry={() => dispatch(LoadForecast)} />
+      </ViewFailureContainer>
     ),
 
-    NetworkError: () => <div>NetworkError</div>,
+    NetworkError: () => (
+      <ViewFailureContainer title="You are facing a Network Error">
+        <Typography paragraph align="center">
+          Pleace check your Internet connection and try again.
+        </Typography>
 
-    BadUrl: url => <div>BadUrl: {url}</div>,
+        <ViewRetrySection onRetry={() => dispatch(LoadForecast)} />
+      </ViewFailureContainer>
+    ),
 
-    BadStatus: response => <div>BadStatus {response.statusCode}</div>,
+    BadUrl: url => (
+      <ViewFailureContainer title="Oops... we broke something...">
+        <Typography paragraph align="center">
+          It looks like the app hits a wrong endpoint <code>{url}</code>.
+        </Typography>
+        <Typography paragraph align="center">
+          We are fixing the issue.
+        </Typography>
+      </ViewFailureContainer>
+    ),
+
+    BadStatus: ({ statusCode }) => {
+      const [side, role] =
+        statusCode < 500 ? ['Client', 'frontend'] : ['Server', 'backend']
+
+      return (
+        <ViewFailureContainer
+          title={`You are facing an unexpected ${side} side Error ${statusCode}!`}
+        >
+          <Typography paragraph align="center">
+            Our {role} developers are fixing the issue.
+          </Typography>
+        </ViewFailureContainer>
+      )
+    },
 
     BadBody: decodeError => (
-      <div>
-        BadBody
-        <code>{decodeError.stringify(4)}</code>
-      </div>
+      <ViewFailureContainer title="You are facing an unexpected Response Body Error!">
+        <Typography paragraph align="center">
+          Something went wrong and our apps seems don't communicate well...
+        </Typography>
+
+        <pre>
+          {decodeError
+            .stringify(4)
+            .replace(/\\"/g, '"')
+            .replace(/\s{3,}"/, '\n\n"')
+            .replace(/\\n/g, '\n')}
+        </pre>
+      </ViewFailureContainer>
     )
   })
-})
+)
 
 export const View: React.FC<{
   pageSize: number
@@ -270,28 +336,18 @@ export const View: React.FC<{
   dispatch: Dispatch<Action>
 }> = ({ pageSize, state, dispatch }) =>
   state.weekForecast.cata({
-    Loading: () => (
-      <div data-cy="forecast__skeleton">
-        <SkeletonForecast pageSize={pageSize} />
-      </div>
-    ),
+    Loading: () => <SkeletonForecast pageSize={pageSize} />,
 
-    Failure: error => (
-      <div data-cy="forecast__report">
-        <ViewFailure error={error} dispatch={dispatch} />
-      </div>
-    ),
+    Failure: error => <ViewFailure error={error} dispatch={dispatch} />,
 
     Succeed: weekForecast => (
-      <div data-cy="forecast__root">
-        <ViewSucceed
-          pageSize={pageSize}
-          units={state.units}
-          unitsChanging={state.unitsChanging}
-          weekForecast={weekForecast}
-          dispatch={dispatch}
-        />
-      </div>
+      <ViewSucceed
+        pageSize={pageSize}
+        units={state.units}
+        unitsChanging={state.unitsChanging}
+        weekForecast={weekForecast}
+        dispatch={dispatch}
+      />
     )
   })
 
@@ -303,7 +359,7 @@ const SkeletNavButton: React.FC = () => (
 
 const SkeletonForecast: React.FC<{ pageSize: number }> = React.memo(
   ({ pageSize }) => (
-    <>
+    <div data-cy="forecast__skeleton">
       <ViewControlsContainer>
         <ViewUnits
           control={
@@ -330,6 +386,6 @@ const SkeletonForecast: React.FC<{ pageSize: number }> = React.memo(
       <ViewWeekRowContainer>
         <SkeletonWeekRow pageSize={pageSize} />
       </ViewWeekRowContainer>
-    </>
+    </div>
   )
 )
