@@ -3,7 +3,7 @@ import Container from '@material-ui/core/Container'
 import Box from '@material-ui/core/Box'
 
 import { Effects, Dispatch, mapEffects } from 'core'
-import * as Forecast from '../Forecast'
+import * as Forecast from 'Forecast'
 
 // S T A T E
 

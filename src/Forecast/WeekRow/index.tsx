@@ -1,7 +1,8 @@
 import React from 'react'
 import Grid from '@material-ui/core/Grid'
 
-import { TempUnits, DayForecast } from 'api'
+import TempUnits from 'entities/TempUnits'
+import DayForecast from 'entities/DayForecast'
 import DayCard, { SkeletonDayCard } from './DayCard'
 import styles from './styles.module.css'
 

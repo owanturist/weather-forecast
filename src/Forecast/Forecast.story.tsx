@@ -5,7 +5,8 @@ import dayjs from 'dayjs'
 import RemoteData from 'frctl/RemoteData'
 
 import { Error as HttpError } from 'httpBuilder'
-import { TempUnits, DayForecast } from 'api'
+import TempUnits from 'entities/TempUnits'
+import DayForecast from 'entities/DayForecast'
 import * as Forecast from './index'
 
 export default {

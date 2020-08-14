@@ -2,7 +2,8 @@ import React from 'react'
 import dayjs from 'dayjs'
 import { number, boolean } from '@storybook/addon-knobs'
 
-import { TempUnits, DayForecast } from 'api'
+import TempUnits from 'entities/TempUnits'
+import DayForecast from 'entities/DayForecast'
 import WeekRow, { SkeletonWeekRow } from './index'
 
 export default {

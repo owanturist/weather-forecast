@@ -1,7 +1,7 @@
 import Either from 'frctl/Either'
 import RemoteData from 'frctl/RemoteData'
 
-import { TempUnits } from 'api'
+import TempUnits from 'entities/TempUnits'
 import { Error as HttpError } from 'httpBuilder'
 import * as Forecast from './'
 

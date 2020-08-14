@@ -2,7 +2,8 @@ import React from 'react'
 import dayjs, { Dayjs } from 'dayjs'
 import { boolean, date, number, optionsKnob } from '@storybook/addon-knobs'
 
-import { TempUnits, DayForecast } from 'api'
+import TempUnits from 'entities/TempUnits'
+import DayForecast from 'entities/DayForecast'
 import DayCard, { SkeletonDayCard } from './index'
 
 export default {

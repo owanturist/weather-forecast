@@ -4,7 +4,8 @@ import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
 import Skeleton from '@material-ui/lab/Skeleton'
 
-import { TempUnits, DayForecast } from 'api'
+import TempUnits from 'entities/TempUnits'
+import DayForecast from 'entities/DayForecast'
 
 const unitsToLabel = (units: TempUnits): string => {
   switch (units) {
