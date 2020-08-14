@@ -6,25 +6,25 @@ it('empty result from empty array', () => {
   expect(initDayForecast([])).toEqual([])
 })
 
-it('single probe for sinle day', () => {
-  const probe1 = {
+it('single segment for sinle day', () => {
+  const segment1 = {
     datetime: dayjs('01-01-2020'),
     temp: 10
   }
-  const probe2 = {
+  const segment2 = {
     datetime: dayjs('01-02-2020'),
     temp: 11
   }
-  const probe3 = {
+  const segment3 = {
     datetime: dayjs('01-03-2020'),
     temp: 12
   }
-  const days = initDayForecast([probe1, probe2, probe3])
+  const days = initDayForecast([segment1, segment2, segment3])
 
-  expect(days.map(day => day.getProbes())).toEqual([
-    [probe1],
-    [probe2],
-    [probe3]
+  expect(days.map(day => day.getSegments())).toEqual([
+    [segment1],
+    [segment2],
+    [segment3]
   ])
 
   expect(days.map(day => day.getAverageTemp())).toEqual([10, 11, 12])
@@ -35,59 +35,59 @@ it('single probe for sinle day', () => {
   ])
 })
 
-it('multipe probes', () => {
-  const probe1 = {
+it('multipe segments', () => {
+  const segment1 = {
     datetime: dayjs('01-01-2020'),
     temp: 10
   }
-  const probe2 = {
+  const segment2 = {
     datetime: dayjs('01-01-2020'),
     temp: 11
   }
-  const probe3 = {
+  const segment3 = {
     datetime: dayjs('01-02-2020'),
     temp: 12
   }
-  const probe4 = {
+  const segment4 = {
     datetime: dayjs('01-02-2020'),
     temp: 13
   }
-  const probe5 = {
+  const segment5 = {
     datetime: dayjs('01-02-2020'),
     temp: 14
   }
-  const probe6 = {
+  const segment6 = {
     datetime: dayjs('01-02-2020'),
     temp: 15
   }
-  const probe7 = {
+  const segment7 = {
     datetime: dayjs('01-03-2020'),
     temp: 16.12
   }
-  const probe8 = {
+  const segment8 = {
     datetime: dayjs('01-03-2020'),
     temp: 17.34
   }
-  const probe9 = {
+  const segment9 = {
     datetime: dayjs('01-03-2020'),
     temp: 18.76
   }
   const days = initDayForecast([
-    probe1,
-    probe2,
-    probe3,
-    probe4,
-    probe5,
-    probe6,
-    probe7,
-    probe8,
-    probe9
+    segment1,
+    segment2,
+    segment3,
+    segment4,
+    segment5,
+    segment6,
+    segment7,
+    segment8,
+    segment9
   ])
 
-  expect(days.map(day => day.getProbes())).toEqual([
-    [probe1, probe2],
-    [probe3, probe4, probe5, probe6],
-    [probe7, probe8, probe9]
+  expect(days.map(day => day.getSegments())).toEqual([
+    [segment1, segment2],
+    [segment3, segment4, segment5, segment6],
+    [segment7, segment8, segment9]
   ])
 
   expect(days.map(day => day.getAverageTemp())).toEqual([10.5, 13.5, 17.41])

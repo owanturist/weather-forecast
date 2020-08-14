@@ -19,7 +19,7 @@ const initial: Forecast.State = Forecast.init('Munich')[0]
 const makeDayForecast = (datestring: string, temp: number): DayForecast => ({
   getDate: () => dayjs(datestring),
   getAverageTemp: () => temp,
-  getProbes: () => []
+  getSegments: () => []
 })
 
 const knobState = (): Forecast.State => ({

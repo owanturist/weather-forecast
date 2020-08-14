@@ -36,7 +36,7 @@ const knobDayForecast = (): DayForecast => {
   return {
     getDate: () => date_,
     getAverageTemp: () => temp,
-    getProbes: () => []
+    getSegments: () => []
   }
 }
 
