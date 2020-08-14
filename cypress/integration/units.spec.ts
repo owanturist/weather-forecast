@@ -30,7 +30,7 @@ describe('Temperature units', () => {
 
     cy.getcy('day-card__root')
       .filter(':contains(°F)')
-      .should('have.length', 5)
+      .should('have.length', 6)
       .filter(':contains(°C)')
       .should('have.length', 0)
   })
@@ -44,7 +44,7 @@ describe('Temperature units', () => {
 
     cy.getcy('day-card__root')
       .filter(':contains(°C)')
-      .should('have.length', 5)
+      .should('have.length', 6)
       .filter(':contains(°F)')
       .should('have.length', 0)
   })

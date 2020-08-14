@@ -40,22 +40,22 @@ describe('Day forecast navigation', () => {
 
   context('scroll to the most right', () => {
     beforeEach(() => {
-      cy.get('@navigationNext').click().click().should('not.be.visible')
+      cy.get('@navigationNext').click().click().click().should('not.be.visible')
       cy.get('@navigationPrev').should('be.visible')
     })
 
     it('navigation next is hidden when there is no day-card on the right', () => {
-      cy.get('@dayCards').eq(1).should('not.be.visible')
-      cy.get('@dayCards').eq(4).should('be.visible')
+      cy.get('@dayCards').eq(2).should('not.be.visible')
+      cy.get('@dayCards').eq(5).should('be.visible')
     })
 
     it('navigation prev scrolls left', () => {
       cy.get('@navigationPrev').click().should('be.visible')
       cy.get('@navigationNext').should('be.visible')
-      cy.get('@dayCards').eq(0).should('not.be.visible')
-      cy.get('@dayCards').eq(1).should('be.visible')
-      cy.get('@dayCards').eq(3).should('be.visible')
-      cy.get('@dayCards').eq(4).should('not.be.visible')
+      cy.get('@dayCards').eq(1).should('not.be.visible')
+      cy.get('@dayCards').eq(2).should('be.visible')
+      cy.get('@dayCards').eq(4).should('be.visible')
+      cy.get('@dayCards').eq(5).should('not.be.visible')
     })
   })
 })
