@@ -1,4 +1,4 @@
-describe('App spec', () => {
+describe('Temperature units', () => {
   beforeEach(() => {
     cy.viewport('macbook-15')
     cy.server({

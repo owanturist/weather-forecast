@@ -1,4 +1,4 @@
-describe('App spec', () => {
+describe('App initialisation', () => {
   beforeEach(() => {
     cy.viewport('macbook-15')
     cy.server({

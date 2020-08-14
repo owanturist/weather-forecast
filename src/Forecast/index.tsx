@@ -149,16 +149,18 @@ const ViewNavigation: React.FC<{
 }> = React.memo(({ prevVisible, nextVisible, onPrevClick, onNextClick }) => (
   <ViewNavigationContainer>
     <ViewNavigationButton
-      visible={prevVisible}
+      data-cy="forecast__navigation_prev"
       aria-label="Scroll to previous day"
+      visible={prevVisible}
       onClick={onPrevClick}
     >
       <ArrowBackIcon />
     </ViewNavigationButton>
 
     <ViewNavigationButton
-      visible={nextVisible}
+      data-cy="forecast__navigation_next"
       aria-label="Scroll to next day"
+      visible={nextVisible}
       onClick={onNextClick}
     >
       <ArrowForwardIcon />
