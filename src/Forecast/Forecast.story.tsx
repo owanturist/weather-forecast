@@ -14,7 +14,7 @@ export default {
   component: Forecast.View
 }
 
-const initial: Forecast.State = Forecast.init('Munich')[0]
+const initial: Forecast.State = Forecast.initByCity('Munich')[0]
 
 const makeDayForecast = (datestring: string, temp: number): DayForecast => {
   const dayDate = dayjs(datestring)
