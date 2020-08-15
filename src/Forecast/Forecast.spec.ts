@@ -5,15 +5,26 @@ import TempUnits from 'entities/TempUnits'
 import { Error as HttpError } from 'httpBuilder'
 import * as Forecast from './'
 
-describe('init', () => {
-  it('initial state has correct fields', () => {
-    const [initialState] = Forecast.init('cityname')
+it('initByCity', () => {
+  const [initialState] = Forecast.initByCity('cityname')
 
-    expect(initialState).toEqual({
-      units: TempUnits.Fahrenheit,
-      unitsChanging: false,
-      weekForecast: RemoteData.Loading
-    })
+  expect(initialState).toEqual({
+    origin: Forecast.ByCity('cityname'),
+    units: TempUnits.Fahrenheit,
+    unitsChanging: false,
+    weekForecast: RemoteData.Loading
+  })
+})
+
+it('initByCoordinates', () => {
+  const coords = { lat: 13.123, lon: 91.321 }
+  const [initialState] = Forecast.initByCoordinates(coords)
+
+  expect(initialState).toEqual({
+    origin: Forecast.ByCoordinates(coords),
+    units: TempUnits.Fahrenheit,
+    unitsChanging: false,
+    weekForecast: RemoteData.Loading
   })
 })
 
@@ -23,8 +34,8 @@ describe('update', () => {
       {
         type: 'LoadForecast'
       },
-      'cityname',
       {
+        origin: Forecast.ByCity('cityname'),
         units: TempUnits.Celcius,
         unitsChanging: true,
         weekForecast: RemoteData.Failure(HttpError.Timeout)
@@ -32,6 +43,7 @@ describe('update', () => {
     )
 
     expect(nextState).toEqual({
+      origin: Forecast.ByCity('cityname'),
       units: TempUnits.Celcius,
       unitsChanging: true,
       weekForecast: RemoteData.Loading
@@ -45,8 +57,8 @@ describe('update', () => {
           type: 'LoadForecastDone',
           result: Either.Left(HttpError.NetworkError)
         },
-        'cityname',
         {
+          origin: Forecast.ByCity('cityname'),
           units: TempUnits.Celcius,
           unitsChanging: true,
           weekForecast: RemoteData.Loading
@@ -54,6 +66,7 @@ describe('update', () => {
       )
 
       expect(nextState).toEqual({
+        origin: Forecast.ByCity('cityname'),
         units: TempUnits.Celcius,
         unitsChanging: false,
         weekForecast: RemoteData.Failure(HttpError.NetworkError)
@@ -66,8 +79,8 @@ describe('update', () => {
           type: 'LoadForecastDone',
           result: Either.Right([])
         },
-        'cityname',
         {
+          origin: Forecast.ByCity('cityname'),
           units: TempUnits.Fahrenheit,
           unitsChanging: true,
           weekForecast: RemoteData.Loading
@@ -75,6 +88,8 @@ describe('update', () => {
       )
 
       expect(nextState).toEqual({
+        origin: Forecast.ByCity('cityname'),
+
         units: TempUnits.Fahrenheit,
         unitsChanging: false,
         weekForecast: RemoteData.Succeed([])
@@ -88,8 +103,8 @@ describe('update', () => {
         type: 'ChangeUnits',
         units: TempUnits.Fahrenheit
       },
-      'cityname',
       {
+        origin: Forecast.ByCity('cityname'),
         units: TempUnits.Celcius,
         unitsChanging: false,
         weekForecast: RemoteData.Succeed([])
@@ -97,6 +112,7 @@ describe('update', () => {
     )
 
     expect(nextState).toEqual({
+      origin: Forecast.ByCity('cityname'),
       units: TempUnits.Fahrenheit,
       unitsChanging: true,
       weekForecast: RemoteData.Succeed([])
