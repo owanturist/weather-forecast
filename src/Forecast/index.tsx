@@ -8,12 +8,18 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import IconButton, { IconButtonProps } from '@material-ui/core/IconButton'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
-import Skeleton from '@material-ui/lab/Skeleton'
+import Skelet from '@material-ui/lab/Skeleton'
+import { Cata, cons } from 'frctl/Basics'
 import RemoteData from 'frctl/RemoteData'
 import Either from 'frctl/Either'
 
-import { Effects, Dispatch } from 'core'
-import { getFiveDayForecastForCity } from 'api'
+import { Dispatch, Effect, Effects } from 'core'
+import { Coordinates } from 'geo'
+import { callOrElse } from 'utils'
+import {
+  getFiveDayForecastForCity,
+  getFiveDayForecastForCoordinates
+} from 'api'
 import TempUnits from 'entities/TempUnits'
 import DayForecast from 'entities/DayForecast'
 import { Error as HttpError } from 'httpBuilder'
@@ -22,24 +28,79 @@ import ErrorReport from './ErrorReport'
 import SkeletonChart from './Chart/Skeleton'
 import styles from './styles.module.css'
 
+// O R I G I N
+
+export type OriginPattern<R> = Cata<{
+  ByCoordinates(coordinates: Coordinates): R
+  ByCity(city: string): R
+}>
+
+export type Origin = {
+  cata<R>(pattern: OriginPattern<R>): R
+}
+
+export const ByCoordinates = cons(
+  class ByCoordinates_ implements Origin {
+    public constructor(private readonly coordinates: Coordinates) {}
+
+    public cata<R>(pattern: OriginPattern<R>): R {
+      return callOrElse(pattern._, pattern.ByCoordinates, this.coordinates)
+    }
+  }
+)
+
+export const ByCity = cons(
+  class ByCity_ implements Origin {
+    public constructor(private readonly city: string) {}
+
+    public cata<R>(pattern: OriginPattern<R>): R {
+      return callOrElse(pattern._, pattern.ByCity, this.city)
+    }
+  }
+)
+
 // S T A T E
 
 export type State = {
+  origin: Origin
   units: TempUnits
   unitsChanging: boolean
   weekForecast: RemoteData<HttpError, Array<DayForecast>>
 }
 
-const initial: State = {
-  units: TempUnits.Fahrenheit,
-  unitsChanging: false,
-  weekForecast: RemoteData.Loading
+const loadForecastForOrigin = (
+  units: TempUnits,
+  origin: Origin
+): Effect<Action> => {
+  return origin
+    .cata({
+      ByCity: city => getFiveDayForecastForCity(units, city),
+      ByCoordinates: coordinates =>
+        getFiveDayForecastForCoordinates(units, coordinates)
+    })
+    .send(LoadForecastDone)
 }
 
-export const init = (city: string): [State, Effects<Action>] => [
-  initial,
-  [getFiveDayForecastForCity(initial.units, city).send(LoadForecastDone)]
-]
+const init = (origin: Origin): [State, Effects<Action>] => {
+  const initial = {
+    origin,
+    units: TempUnits.Fahrenheit,
+    unitsChanging: false,
+    weekForecast: RemoteData.Loading
+  }
+
+  return [initial, [loadForecastForOrigin(initial.units, origin)]]
+}
+
+export const initByCity = (city: string): [State, Effects<Action>] => {
+  return init(ByCity(city))
+}
+
+export const initByCoordinates = (
+  coordinates: Coordinates
+): [State, Effects<Action>] => {
+  return init(ByCoordinates(coordinates))
+}
 
 // U P D A T E
 
@@ -64,7 +125,6 @@ const ChangeUnits = (units: TempUnits): Action => ({
 
 export const update = (
   action: Action,
-  city: string,
   state: State
 ): [State, Effects<Action>] => {
   switch (action.type) {
@@ -74,7 +134,7 @@ export const update = (
           ...state,
           weekForecast: RemoteData.Loading
         },
-        [getFiveDayForecastForCity(state.units, city).send(LoadForecastDone)]
+        [loadForecastForOrigin(state.units, state.origin)]
       ]
     }
 
@@ -96,7 +156,7 @@ export const update = (
           unitsChanging: true,
           units: action.units
         },
-        [getFiveDayForecastForCity(action.units, city).send(LoadForecastDone)]
+        [loadForecastForOrigin(action.units, state.origin)]
       ]
     }
   }
@@ -279,7 +339,7 @@ export const View: React.FC<{
   const onRetry = React.useCallback(() => dispatch(LoadForecast), [dispatch])
 
   return state.weekForecast.cata({
-    Loading: () => <SkeletonForecast pageSize={pageSize} />,
+    Loading: () => <Skeleton pageSize={pageSize} />,
 
     Failure: error => <ErrorReport error={error} onRetry={onRetry} />,
 
@@ -298,10 +358,10 @@ export const View: React.FC<{
 // S K E L E T O N
 
 const SkeletNavButton: React.FC = () => (
-  <Skeleton variant="circle" width="48px" height="48px" />
+  <Skelet variant="circle" width="48px" height="48px" />
 )
 
-const SkeletonForecast: React.FC<{ pageSize: number }> = React.memo(
+export const Skeleton: React.FC<{ pageSize: number }> = React.memo(
   ({ pageSize }) => (
     <div data-cy="forecast__skeleton">
       <ViewControlsContainer>
@@ -314,11 +374,11 @@ const SkeletonForecast: React.FC<{ pageSize: number }> = React.memo(
               justifyContent="center"
               alignItems="center"
             >
-              <Skeleton variant="circle" width="20px" height="20px" />
+              <Skelet variant="circle" width="20px" height="20px" />
             </Box>
           }
-          celciusNode={<Skeleton width="54px" />}
-          fahrenheitNode={<Skeleton width="78px" />}
+          celciusNode={<Skelet width="54px" />}
+          fahrenheitNode={<Skelet width="78px" />}
         />
 
         <ViewNavigationContainer>

@@ -1,32 +1,48 @@
 import React from 'react'
 import Container from '@material-ui/core/Container'
 import Box from '@material-ui/core/Box'
+import Maybe from 'frctl/Maybe'
+import Either from 'frctl/Either'
 
 import { Effects, Dispatch, mapEffects } from 'core'
+import { Coordinates, getCurrentLocation } from 'geo'
 import * as Forecast from 'Forecast'
 
 // S T A T E
 
 export type State = {
-  city: string
-  forecast: Forecast.State
+  forecast: Maybe<Forecast.State>
 }
 
-export const init = (initialCity: string): [State, Effects<Action>] => {
-  const [initialForecast, effectsOfForecast] = Forecast.init(initialCity)
-
-  return [
-    {
-      city: initialCity,
-      forecast: initialForecast
-    },
-    mapEffects(ForecastAction, effectsOfForecast)
+export const init = (defaultCity: string): [State, Effects<Action>] => [
+  {
+    forecast: Maybe.Nothing
+  },
+  [
+    getCurrentLocation(coordinates =>
+      RetrieveLocation(defaultCity, coordinates)
+    )
   ]
-}
+]
 
 // U P D A T E
 
-export type Action = { type: 'ForecastAction'; child: Forecast.Action }
+export type Action =
+  | {
+      type: 'RetrieveLocation'
+      defaultCity: string
+      coordinates: Either<string, Coordinates>
+    }
+  | { type: 'ForecastAction'; child: Forecast.Action }
+
+const RetrieveLocation = (
+  defaultCity: string,
+  coordinates: Either<string, Coordinates>
+): Action => ({
+  type: 'RetrieveLocation',
+  defaultCity,
+  coordinates
+})
 
 const ForecastAction = (child: Forecast.Action): Action => ({
   type: 'ForecastAction',
@@ -37,19 +53,42 @@ export const update = (
   action: Action,
   state: State
 ): [State, Effects<Action>] => {
-  const [nextForecast, effectsOfForecast] = Forecast.update(
-    action.child,
-    state.city,
-    state.forecast
-  )
+  switch (action.type) {
+    case 'RetrieveLocation': {
+      const [initialForecast, effectsOfForecast] = action.coordinates.cata({
+        Left: () => Forecast.initByCity(action.defaultCity),
+        Right: Forecast.initByCoordinates
+      })
 
-  return [
-    {
-      ...state,
-      forecast: nextForecast
-    },
-    mapEffects(ForecastAction, effectsOfForecast)
-  ]
+      return [
+        {
+          forecast: Maybe.Just(initialForecast)
+        },
+        mapEffects(ForecastAction, effectsOfForecast)
+      ]
+    }
+
+    case 'ForecastAction': {
+      return state.forecast.cata({
+        Nothing: () => [state, []],
+
+        Just: forecast => {
+          const [nextForecast, effectsOfForecast] = Forecast.update(
+            action.child,
+            forecast
+          )
+
+          return [
+            {
+              ...state,
+              forecast: Maybe.Just(nextForecast)
+            },
+            mapEffects(ForecastAction, effectsOfForecast)
+          ]
+        }
+      })
+    }
+  }
 }
 
 // V I E W
@@ -73,11 +112,17 @@ export const View: React.FC<{ state: State; dispatch: Dispatch<Action> }> = ({
     >
       <Container disableGutters maxWidth="md">
         <Box bgcolor="background.paper">
-          <Forecast.View
-            pageSize={3}
-            state={state.forecast}
-            dispatch={forecastDispatch}
-          />
+          {state.forecast.cata({
+            Nothing: () => <Forecast.Skeleton pageSize={3} />,
+
+            Just: forecast => (
+              <Forecast.View
+                pageSize={3}
+                state={forecast}
+                dispatch={forecastDispatch}
+              />
+            )
+          })}
         </Box>
       </Container>
     </Box>

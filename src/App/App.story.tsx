@@ -1,5 +1,6 @@
 import React from 'react'
 import { action } from '@storybook/addon-actions'
+import Maybe from 'frctl/Maybe'
 import RemoteData from 'frctl/RemoteData'
 
 import { Error as HttpError } from 'httpBuilder'
@@ -12,7 +13,7 @@ export default {
 }
 
 const initial: App.State = App.init('Munich')[0]
-const initialForecast: Forecast.State = Forecast.init(initial.city)[0]
+const initialForecast: Forecast.State = Forecast.initByCity('Munich')[0]
 
 export const Initialising: React.FC = () => (
   <App.View state={initial} dispatch={action('dispatch')} />
@@ -22,10 +23,10 @@ export const Failure: React.FC = () => (
   <App.View
     state={{
       ...initial,
-      forecast: {
+      forecast: Maybe.Just({
         ...initialForecast,
         weekForecast: RemoteData.Failure(HttpError.NetworkError)
-      }
+      })
     }}
     dispatch={action('dispatch')}
   />
