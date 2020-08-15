@@ -25,3 +25,27 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('getcy', (cyid: string) => cy.get(`[data-cy=${cyid}]`))
+
+Cypress.Commands.overwrite(
+  'visit',
+  (
+    original: typeof cy.visit,
+    path: string,
+    options: Partial<Cypress.VisitOptions>
+  ) => {
+    original(path, {
+      ...options,
+      onBeforeLoad: win => {
+        cy.stub(
+          win.navigator.geolocation,
+          'getCurrentPosition',
+          (onSuccess, onFail) => onFail()
+        )
+
+        if (options.onBeforeLoad) {
+          options.onBeforeLoad(win)
+        }
+      }
+    })
+  }
+)
