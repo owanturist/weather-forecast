@@ -1,13 +1,51 @@
 import React, { ReactNode } from 'react'
+import Box from '@material-ui/core/Box'
 import Card, { CardProps } from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
-import Typography from '@material-ui/core/Typography'
 import Skeleton from '@material-ui/lab/Skeleton'
+import { useTheme } from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 import TempUnits, { formatTempUnits } from 'entities/TempUnits'
 import DayForecast from 'entities/DayForecast'
+
+const useResponsiveViewCard = (): {
+  tempSize: string
+  dateSize: string
+} => {
+  const theme = useTheme()
+  const matchesSm = useMediaQuery(theme.breakpoints.up('sm'))
+  const matchesMd = useMediaQuery(theme.breakpoints.up('md'))
+  const matchesLg = useMediaQuery(theme.breakpoints.up('lg'))
+
+  if (matchesLg) {
+    return {
+      tempSize: '1.8rem',
+      dateSize: '1.2rem'
+    }
+  }
+
+  if (matchesMd) {
+    return {
+      tempSize: '1.5rem',
+      dateSize: '1rem'
+    }
+  }
+
+  if (matchesSm) {
+    return {
+      tempSize: '1.2rem',
+      dateSize: '0.9rem'
+    }
+  }
+
+  return {
+    tempSize: '0.9rem',
+    dateSize: '0.6rem'
+  }
+}
 
 const ViewCard: React.FC<
   CardProps & {
@@ -15,17 +53,54 @@ const ViewCard: React.FC<
     dateNode: ReactNode
     actionNode: ReactNode
   }
-> = ({ tempNode, dateNode, actionNode, ...props }) => (
-  <Card {...props}>
-    <CardContent>
-      <Typography variant="h4">{tempNode}</Typography>
+> = ({ tempNode, dateNode, actionNode, ...props }) => {
+  const { tempSize, dateSize } = useResponsiveViewCard()
 
-      <Typography variant="subtitle1">{dateNode}</Typography>
-    </CardContent>
+  return (
+    <Card {...props}>
+      <CardContent>
+        <Box fontWeight="400" fontSize={tempSize}>
+          {tempNode}
+        </Box>
 
-    <CardActions>{actionNode}</CardActions>
-  </Card>
-)
+        <Box fontSize={dateSize}>{dateNode}</Box>
+      </CardContent>
+
+      <CardActions>{actionNode}</CardActions>
+    </Card>
+  )
+}
+
+const useResponsiveViewDetailsButton = (): {
+  fullWidth: boolean
+} => {
+  const theme = useTheme()
+  const matchesSm = useMediaQuery(theme.breakpoints.up('sm'))
+
+  return {
+    fullWidth: !matchesSm
+  }
+}
+
+const ViewDetailsButton: React.FC<{
+  active?: boolean
+  onShowDetails?(): void
+}> = React.memo(({ active, onShowDetails }) => {
+  const { fullWidth } = useResponsiveViewDetailsButton()
+
+  return (
+    <Button
+      fullWidth={fullWidth}
+      disabled={active}
+      color="primary"
+      size="small"
+      variant="contained"
+      onClick={onShowDetails}
+    >
+      {fullWidth ? 'Details' : 'Show Details'}
+    </Button>
+  )
+})
 
 const DayCard: React.FC<{
   active?: boolean
@@ -46,15 +121,7 @@ const DayCard: React.FC<{
     }
     dateNode={forecast.getDate().format('DD MMM YY')}
     actionNode={
-      <Button
-        disabled={active}
-        color="primary"
-        size="small"
-        variant="contained"
-        onClick={onShowDetails}
-      >
-        Show Details
-      </Button>
+      <ViewDetailsButton active={active} onShowDetails={onShowDetails} />
     }
   />
 ))
@@ -63,10 +130,21 @@ export default DayCard
 
 // S K E L E T O N
 
-export const SkeletonDayCard: React.FC = React.memo(() => (
-  <ViewCard
-    tempNode={<Skeleton />}
-    dateNode={<Skeleton />}
-    actionNode={<Skeleton variant="rect" width="122px" height="30px" />}
-  />
-))
+export const SkeletonDayCard: React.FC = React.memo(() => {
+  const { fullWidth } = useResponsiveViewDetailsButton()
+
+  return (
+    <ViewCard
+      elevation={0}
+      tempNode={<Skeleton />}
+      dateNode={<Skeleton />}
+      actionNode={
+        <Skeleton
+          variant="rect"
+          width={fullWidth ? '100%' : '122px'}
+          height="30px"
+        />
+      }
+    />
+  )
+})
