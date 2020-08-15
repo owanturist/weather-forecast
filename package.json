@@ -13,7 +13,7 @@
     "analyze": "source-map-explorer 'build/static/js/**/*.js' --gzip",
     "storybook": "start-storybook -p 9009 -s public",
     "storybook:build": "build-storybook -s public",
-    "cy:app": "REACT_APP_HTTP_TIMEOUT=200 yarn dev",
+    "cy:app": "REACT_APP_HTTP_TIMEOUT=400 yarn dev",
     "cy:open": "cypress open",
     "cy:run": "cypress run"
   },

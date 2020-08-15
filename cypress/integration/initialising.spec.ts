@@ -42,7 +42,7 @@ describe('App initialisation', () => {
       url: '**/forecast**',
       response: 'fixture:success_imperial',
       status: 200,
-      delay: 300
+      delay: 500
     }).as('getForecastSlow')
 
     cy.visit('/')
