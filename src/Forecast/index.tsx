@@ -264,7 +264,7 @@ const ViewSucceed: React.FC<{
 
       <ViewChartContainer>
         <Suspense fallback={<SkeletonChart />}>
-          <ViewChart segments={activeDaySegments} />
+          <ViewChart units={units} segments={activeDaySegments} />
         </Suspense>
       </ViewChartContainer>
     </div>

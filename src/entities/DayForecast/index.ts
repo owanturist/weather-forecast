@@ -1,8 +1,6 @@
 import dayjs, { Dayjs } from 'dayjs'
 import Decode, { Decoder } from 'frctl/Json/Decode'
 
-import { round } from 'utils'
-
 type DayForecast = {
   getDate(): Dayjs
   getAverageTemp(): number
@@ -44,7 +42,7 @@ class DayForecastImpl implements DayForecast {
       total += segment.temp
     }
 
-    return round(total / this.segments.length, 2)
+    return total / this.segments.length
   }
 
   public getSegments(): Array<DayForecastSegment> {

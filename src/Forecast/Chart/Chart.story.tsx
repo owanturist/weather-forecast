@@ -1,7 +1,8 @@
 import React from 'react'
 import dayjs, { Dayjs } from 'dayjs'
-import { date, number } from '@storybook/addon-knobs'
+import { date, number, optionsKnob } from '@storybook/addon-knobs'
 
+import TempUnits from 'entities/TempUnits'
 import { DayForecastSegment } from 'entities/DayForecast'
 import Chart from './'
 import SkeletonChart from './Skeleton'
@@ -24,6 +25,20 @@ const knobTemp = (label: string, initialTemp: number): number => {
   })
 }
 
+const knobUnits = (label: string, initialUnit: TempUnits): TempUnits => {
+  return optionsKnob(
+    label,
+    {
+      Celcius: TempUnits.Celcius,
+      Fahrenheit: TempUnits.Fahrenheit
+    },
+    initialUnit,
+    {
+      display: 'radio'
+    }
+  )
+}
+
 const knobSegment = (
   labelPostfix: string,
   initialDate: string,
@@ -35,6 +50,7 @@ const knobSegment = (
 
 export const OnlyPositive: React.FC = () => (
   <Chart
+    units={knobUnits('Units', TempUnits.Fahrenheit)}
     segments={[
       knobSegment('#1', '01-02-2020 00:00', 23),
       knobSegment('#2', '01-02-2020 03:00', 21.32),
@@ -50,6 +66,7 @@ export const OnlyPositive: React.FC = () => (
 
 export const OnlyNegative: React.FC = () => (
   <Chart
+    units={knobUnits('Units', TempUnits.Fahrenheit)}
     segments={[
       knobSegment('#1', '01-02-2020 00:00', -23),
       knobSegment('#2', '01-02-2020 03:00', -21.32),
@@ -65,6 +82,7 @@ export const OnlyNegative: React.FC = () => (
 
 export const BothPositiveAndNegative: React.FC = () => (
   <Chart
+    units={knobUnits('Units', TempUnits.Fahrenheit)}
     segments={[
       knobSegment('#1', '01-02-2020 00:00', -1.3),
       knobSegment('#2', '01-02-2020 03:00', -0.42),
@@ -79,5 +97,5 @@ export const BothPositiveAndNegative: React.FC = () => (
 )
 
 export const Skeleton: React.FC = () => (
-  <SkeletonChart count={number('Count', 5)} />
+  <SkeletonChart count={number('Count', 8)} />
 )

@@ -6,17 +6,8 @@ import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import Skeleton from '@material-ui/lab/Skeleton'
 
-import TempUnits from 'entities/TempUnits'
+import TempUnits, { formatTempUnits } from 'entities/TempUnits'
 import DayForecast from 'entities/DayForecast'
-
-const unitsToLabel = (units: TempUnits): string => {
-  switch (units) {
-    case TempUnits.Celcius:
-      return '°C'
-    case TempUnits.Fahrenheit:
-      return '°F'
-  }
-}
 
 const ViewCard: React.FC<
   CardProps & {
@@ -50,7 +41,7 @@ const DayCard: React.FC<{
       unitsChanging ? (
         <Skeleton />
       ) : (
-        forecast.getAverageTemp().toString() + unitsToLabel(units)
+        formatTempUnits(forecast.getAverageTemp(), units)
       )
     }
     dateNode={forecast.getDate().format('DD MMM YY')}
