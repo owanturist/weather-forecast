@@ -51,6 +51,7 @@ const ViewTooltipContent: React.FC<
       borderRadius={2}
       fontSize={16}
     >
+      {props.label}:{' '}
       {props.payload?.map(({ value }) =>
         typeof value === 'number' ? formatTempUnits(value, units) : value
       )}
