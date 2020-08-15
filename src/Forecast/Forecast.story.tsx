@@ -30,7 +30,7 @@ const makeDayForecast = (datestring: string, temp: number): DayForecast => {
   }
 }
 
-const knobState = (): Forecast.State => ({
+const knobSucceedState = (): Forecast.State => ({
   ...initial,
   unitsChanging: boolean('Units changing', false),
   units: TempUnits.Fahrenheit,
@@ -50,7 +50,7 @@ export const Loading: React.FC = () => (
 export const Succeed: React.FC = () => (
   <Forecast.View
     pageSize={3}
-    state={knobState()}
+    state={knobSucceedState()}
     dispatch={action('dispatch')}
   />
 )

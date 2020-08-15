@@ -122,6 +122,12 @@ const ViewWeekRowContainer: React.FC = ({ children }) => (
   </Box>
 )
 
+const ViewChartContainer: React.FC = ({ children }) => (
+  <Box paddingTop={1} paddingBottom={3}>
+    {children}
+  </Box>
+)
+
 const ViewUnits: React.FC<
   RadioGroupProps & {
     control: ReactElement
@@ -256,9 +262,11 @@ const ViewSucceed: React.FC<{
         />
       </ViewWeekRowContainer>
 
-      <Suspense fallback={<SkeletonChart />}>
-        <ViewChart segments={activeDaySegments} />
-      </Suspense>
+      <ViewChartContainer>
+        <Suspense fallback={<SkeletonChart />}>
+          <ViewChart segments={activeDaySegments} />
+        </Suspense>
+      </ViewChartContainer>
     </div>
   )
 })
@@ -322,6 +330,10 @@ const SkeletonForecast: React.FC<{ pageSize: number }> = React.memo(
       <ViewWeekRowContainer>
         <SkeletonWeekRow pageSize={pageSize} />
       </ViewWeekRowContainer>
+
+      <ViewChartContainer>
+        <SkeletonChart />
+      </ViewChartContainer>
     </div>
   )
 )

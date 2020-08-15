@@ -4,6 +4,7 @@ import { date, number } from '@storybook/addon-knobs'
 
 import { DayForecastSegment } from 'entities/DayForecast'
 import Chart from './'
+import SkeletonChart from './Skeleton'
 
 export default {
   title: 'Forecast . Chart',
@@ -23,39 +24,60 @@ const knobTemp = (label: string, initialTemp: number): number => {
   })
 }
 
-const knobSegments = (): Array<DayForecastSegment> => [
-  {
-    datetime: knobDayjs('Datetime #1', '01-02-2020 00:00'),
-    temp: knobTemp('Temp #1', 23)
-  },
-  {
-    datetime: knobDayjs('Datetime #2', '01-02-2020 03:00'),
-    temp: knobTemp('Temp #2', 21.32)
-  },
-  {
-    datetime: knobDayjs('Datetime #3', '01-02-2020 06:00'),
-    temp: knobTemp('Temp #3', 24.2)
-  },
-  {
-    datetime: knobDayjs('Datetime #4', '01-02-2020 09:00'),
-    temp: knobTemp('Temp #4', 25.9)
-  },
-  {
-    datetime: knobDayjs('Datetime #5', '01-02-2020 12:00'),
-    temp: knobTemp('Temp #5', 26.1)
-  },
-  {
-    datetime: knobDayjs('Datetime #6', '01-02-2020 15:00'),
-    temp: knobTemp('Temp #6', 28.4)
-  },
-  {
-    datetime: knobDayjs('Datetime #7', '01-02-2020 18:00'),
-    temp: knobTemp('Temp #7', 25.31)
-  },
-  {
-    datetime: knobDayjs('Datetime #8', '01-02-2020 21:00'),
-    temp: knobTemp('Temp #8', 20.97)
-  }
-]
+const knobSegment = (
+  labelPostfix: string,
+  initialDate: string,
+  initialTemp: number
+): DayForecastSegment => ({
+  datetime: knobDayjs(`Datetime ${labelPostfix}`, initialDate),
+  temp: knobTemp(`Temp ${labelPostfix}`, initialTemp)
+})
 
-export const Default: React.FC = () => <Chart segments={knobSegments()} />
+export const OnlyPositive: React.FC = () => (
+  <Chart
+    segments={[
+      knobSegment('#1', '01-02-2020 00:00', 23),
+      knobSegment('#2', '01-02-2020 03:00', 21.32),
+      knobSegment('#3', '01-02-2020 06:00', 24.2),
+      knobSegment('#4', '01-02-2020 09:00', 25.9),
+      knobSegment('#5', '01-02-2020 12:00', 26.1),
+      knobSegment('#6', '01-02-2020 15:00', 28.4),
+      knobSegment('#7', '01-02-2020 18:00', 25.31),
+      knobSegment('#8', '01-02-2020 21:00', 20.97)
+    ]}
+  />
+)
+
+export const OnlyNegative: React.FC = () => (
+  <Chart
+    segments={[
+      knobSegment('#1', '01-02-2020 00:00', -23),
+      knobSegment('#2', '01-02-2020 03:00', -21.32),
+      knobSegment('#3', '01-02-2020 06:00', -24.2),
+      knobSegment('#4', '01-02-2020 09:00', -25.9),
+      knobSegment('#5', '01-02-2020 12:00', -26.1),
+      knobSegment('#6', '01-02-2020 15:00', -28.4),
+      knobSegment('#7', '01-02-2020 18:00', -25.31),
+      knobSegment('#8', '01-02-2020 21:00', -20.97)
+    ]}
+  />
+)
+
+export const BothPositiveAndNegative: React.FC = () => (
+  <Chart
+    segments={[
+      knobSegment('#1', '01-02-2020 00:00', -1.3),
+      knobSegment('#2', '01-02-2020 03:00', -0.42),
+      knobSegment('#3', '01-02-2020 06:00', 1.92),
+      knobSegment('#4', '01-02-2020 09:00', 3.4),
+      knobSegment('#5', '01-02-2020 12:00', 7.12),
+      knobSegment('#6', '01-02-2020 15:00', 4.09),
+      knobSegment('#7', '01-02-2020 18:00', 0),
+      knobSegment('#8', '01-02-2020 21:00', -3.12)
+    ]}
+  />
+)
+
+export const Skeleton: React.FC = () => (
+  <SkeletonChart count={number('Count', 5)} />
+)
