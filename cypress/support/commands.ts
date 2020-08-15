@@ -33,10 +33,13 @@ Cypress.Commands.overwrite(
     path: string,
     options: Partial<Cypress.VisitOptions>
   ) => {
+    // eslint-disable-next-line init-declarations
+    let stub: Cypress.Agent<sinon.SinonStub>
+
     original(path, {
       ...options,
       onBeforeLoad: win => {
-        cy.stub(
+        stub = cy.stub(
           win.navigator.geolocation,
           'getCurrentPosition',
           (onSuccess, onFail) => onFail()
@@ -44,6 +47,14 @@ Cypress.Commands.overwrite(
 
         if (options.onBeforeLoad) {
           options.onBeforeLoad(win)
+        }
+      },
+
+      onLoad: win => {
+        stub.reset()
+
+        if (options.onLoad) {
+          options.onLoad(win)
         }
       }
     })
