@@ -70,7 +70,7 @@ it('multipe segments', () => {
   }
   const segment9 = {
     datetime: dayjs('01-03-2020'),
-    temp: 18.76
+    temp: 18.71
   }
   const days = initDayForecast([
     segment1,
@@ -90,7 +90,7 @@ it('multipe segments', () => {
     [segment7, segment8, segment9]
   ])
 
-  expect(days.map(day => day.getAverageTemp())).toEqual([10.5, 13.5, 17.41])
+  expect(days.map(day => day.getAverageTemp())).toEqual([10.5, 13.5, 17.39])
   expect(days.map(day => day.getDate())).toEqual([
     dayjs('01-01-2020'),
     dayjs('01-02-2020'),
