@@ -1,7 +1,7 @@
 import React from 'react'
 import { action } from '@storybook/addon-actions'
 import { boolean } from '@storybook/addon-knobs'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import RemoteData from 'frctl/RemoteData'
 
 import { Error as HttpError } from 'httpBuilder'
@@ -16,13 +16,21 @@ export default {
 
 const initial: Forecast.State = Forecast.init('Munich')[0]
 
-const makeDayForecast = (datestring: string, temp: number): DayForecast => ({
-  getDate: () => dayjs(datestring),
-  getAverageTemp: () => temp,
-  getProbes: () => []
-})
+const makeDayForecast = (datestring: string, temp: number): DayForecast => {
+  const dayDate = dayjs(datestring)
+  const segments = new Array(8).fill(dayDate).map((d: Dayjs, i) => ({
+    datetime: d.set('hour', 3 * i),
+    temp: temp - 4 + i
+  }))
 
-const knobState = (): Forecast.State => ({
+  return {
+    getDate: () => dayDate,
+    getAverageTemp: () => temp,
+    getSegments: () => segments
+  }
+}
+
+const knobSucceedState = (): Forecast.State => ({
   ...initial,
   unitsChanging: boolean('Units changing', false),
   units: TempUnits.Fahrenheit,
@@ -42,7 +50,7 @@ export const Loading: React.FC = () => (
 export const Succeed: React.FC = () => (
   <Forecast.View
     pageSize={3}
-    state={knobState()}
+    state={knobSucceedState()}
     dispatch={action('dispatch')}
   />
 )

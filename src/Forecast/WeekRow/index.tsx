@@ -40,21 +40,60 @@ const ViewGrid: React.FC<{
   )
 }
 
+const ViewDayCard: React.FC<{
+  index: number
+  active: boolean
+  unitsChanging?: boolean
+  units: TempUnits
+  forecast: DayForecast
+  onShowDetails(index: number): void
+}> = React.memo(
+  ({ index, active, unitsChanging, units, forecast, onShowDetails }) => {
+    const onShowThisDetails = React.useCallback(() => onShowDetails(index), [
+      index,
+      onShowDetails
+    ])
+
+    return (
+      <DayCard
+        active={active}
+        unitsChanging={unitsChanging}
+        units={units}
+        forecast={forecast}
+        onShowDetails={onShowThisDetails}
+      />
+    )
+  }
+)
+
 const WeekRow: React.FC<{
   pageSize: number
+  activeIndex: number
   shiftIndex: number
   unitsChanging?: boolean
   units: TempUnits
   weekForecast: Array<DayForecast>
+  onShowDetails(index: number): void
 }> = React.memo(
-  ({ pageSize, shiftIndex, unitsChanging, units, weekForecast }) => (
+  ({
+    pageSize,
+    activeIndex,
+    shiftIndex,
+    unitsChanging,
+    units,
+    weekForecast,
+    onShowDetails
+  }) => (
     <ViewGrid pageSize={pageSize} shiftIndex={shiftIndex}>
-      {weekForecast.map(forecast => (
-        <DayCard
+      {weekForecast.map((forecast, index) => (
+        <ViewDayCard
           key={forecast.getDate().toISOString()}
+          index={index}
+          active={index === activeIndex}
           unitsChanging={unitsChanging}
           units={units}
           forecast={forecast}
+          onShowDetails={onShowDetails}
         />
       ))}
     </ViewGrid>

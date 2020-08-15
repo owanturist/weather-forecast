@@ -36,12 +36,13 @@ const knobDayForecast = (): DayForecast => {
   return {
     getDate: () => date_,
     getAverageTemp: () => temp,
-    getProbes: () => []
+    getSegments: () => []
   }
 }
 
 export const Initial: React.FC = () => (
   <DayCard
+    active={boolean('Active', false)}
     unitsChanging={boolean('Units changing', false)}
     units={knobUnits('Units', TempUnits.Celcius)}
     forecast={knobDayForecast()}

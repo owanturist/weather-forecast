@@ -1,4 +1,4 @@
-import React, { ReactNode, ReactElement } from 'react'
+import React, { ReactNode, ReactElement, Suspense } from 'react'
 import Zoom from '@material-ui/core/Zoom'
 import Box from '@material-ui/core/Box'
 import Radio from '@material-ui/core/Radio'
@@ -19,6 +19,7 @@ import DayForecast from 'entities/DayForecast'
 import { Error as HttpError } from 'httpBuilder'
 import WeekRow, { SkeletonWeekRow } from './WeekRow'
 import ErrorReport from './ErrorReport'
+import SkeletonChart from './Chart/Skeleton'
 import styles from './styles.module.css'
 
 // S T A T E
@@ -104,7 +105,7 @@ export const update = (
 // V I E W
 
 const ViewControlsContainer: React.FC = ({ children }) => (
-  <Box paddingX={2} paddingY={1}>
+  <Box paddingX={2} paddingTop={1}>
     {children}
   </Box>
 )
@@ -116,7 +117,13 @@ const ViewNavigationContainer: React.FC = ({ children }) => (
 )
 
 const ViewWeekRowContainer: React.FC = ({ children }) => (
-  <Box padding={1} className={styles.weekRowContainer}>
+  <Box paddingX={1} paddingY={3} className={styles.weekRowContainer}>
+    {children}
+  </Box>
+)
+
+const ViewChartContainer: React.FC = ({ children }) => (
+  <Box paddingTop={1} paddingBottom={3}>
     {children}
   </Box>
 )
@@ -185,6 +192,10 @@ const ViewNavigation: React.FC<{
   </ViewNavigationContainer>
 ))
 
+const ViewChart = React.lazy(() => import('./Chart'))
+
+const radioControl = <Radio color="primary" />
+
 const ViewSucceed: React.FC<{
   pageSize: number
   units: TempUnits
@@ -193,7 +204,30 @@ const ViewSucceed: React.FC<{
   dispatch: Dispatch<Action>
 }> = React.memo(props => {
   const { pageSize, units, unitsChanging, weekForecast, dispatch } = props
-  const [shiftIndex, setShiftIndex] = React.useState(0)
+  const [{ shiftIndex, activeIndex }, setState] = React.useState({
+    shiftIndex: 0,
+    activeIndex: 0
+  })
+
+  const onPrevClick = React.useCallback(
+    () => setState(state => ({ ...state, shiftIndex: state.shiftIndex - 1 })),
+    []
+  )
+  const onNextClick = React.useCallback(
+    () => setState(state => ({ ...state, shiftIndex: state.shiftIndex + 1 })),
+    []
+  )
+  const onShowDetails = React.useCallback(
+    index =>
+      setState(state => ({ ...state, activeIndex: index - state.shiftIndex })),
+    []
+  )
+  const onChangeUnits = React.useCallback(
+    event => dispatch(ChangeUnits(event.currentTarget.value as TempUnits)),
+    [dispatch]
+  )
+
+  const activeDaySegments = weekForecast[shiftIndex + activeIndex].getSegments()
 
   return (
     <div data-cy="forecast__root">
@@ -202,32 +236,17 @@ const ViewSucceed: React.FC<{
           aria-label="Temperature units"
           name="temp-units"
           value={units}
-          control={React.useMemo(
-            () => (
-              <Radio color="primary" />
-            ),
-            []
-          )}
+          control={radioControl}
           celciusNode="Celcius"
           fahrenheitNode="Fahrenheit"
-          onChange={React.useCallback(
-            event =>
-              dispatch(ChangeUnits(event.currentTarget.value as TempUnits)),
-            [dispatch]
-          )}
+          onChange={onChangeUnits}
         />
 
         <ViewNavigation
           prevVisible={shiftIndex > 0}
           nextVisible={shiftIndex < weekForecast.length - pageSize}
-          onPrevClick={React.useCallback(
-            () => setShiftIndex(index => index - 1),
-            []
-          )}
-          onNextClick={React.useCallback(
-            () => setShiftIndex(index => index + 1),
-            []
-          )}
+          onPrevClick={onPrevClick}
+          onNextClick={onNextClick}
         />
       </ViewControlsContainer>
 
@@ -235,11 +254,19 @@ const ViewSucceed: React.FC<{
         <WeekRow
           pageSize={pageSize}
           shiftIndex={shiftIndex}
+          activeIndex={shiftIndex + activeIndex}
           units={units}
           unitsChanging={unitsChanging}
           weekForecast={weekForecast}
+          onShowDetails={onShowDetails}
         />
       </ViewWeekRowContainer>
+
+      <ViewChartContainer>
+        <Suspense fallback={<SkeletonChart />}>
+          <ViewChart units={units} segments={activeDaySegments} />
+        </Suspense>
+      </ViewChartContainer>
     </div>
   )
 })
@@ -248,16 +275,13 @@ export const View: React.FC<{
   pageSize: number
   state: State
   dispatch: Dispatch<Action>
-}> = ({ pageSize, state, dispatch }) =>
-  state.weekForecast.cata({
+}> = React.memo(({ pageSize, state, dispatch }) => {
+  const onRetry = React.useCallback(() => dispatch(LoadForecast), [dispatch])
+
+  return state.weekForecast.cata({
     Loading: () => <SkeletonForecast pageSize={pageSize} />,
 
-    Failure: error => (
-      <ErrorReport
-        error={error}
-        onRetry={React.useCallback(() => dispatch(LoadForecast), [])}
-      />
-    ),
+    Failure: error => <ErrorReport error={error} onRetry={onRetry} />,
 
     Succeed: weekForecast => (
       <ViewSucceed
@@ -269,6 +293,7 @@ export const View: React.FC<{
       />
     )
   })
+})
 
 // S K E L E T O N
 
@@ -305,6 +330,10 @@ const SkeletonForecast: React.FC<{ pageSize: number }> = React.memo(
       <ViewWeekRowContainer>
         <SkeletonWeekRow pageSize={pageSize} />
       </ViewWeekRowContainer>
+
+      <ViewChartContainer>
+        <SkeletonChart />
+      </ViewChartContainer>
     </div>
   )
 )
