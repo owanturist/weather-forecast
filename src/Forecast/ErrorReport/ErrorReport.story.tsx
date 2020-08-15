@@ -1,10 +1,20 @@
 import React from 'react'
 import { action } from '@storybook/addon-actions'
-import { text, number } from '@storybook/addon-knobs'
+import { text, number, boolean } from '@storybook/addon-knobs'
 import Decode from 'frctl/Json/Decode'
 
 import { Error as HttpError } from 'httpBuilder'
 import ErrorReport from './index'
+
+const knobBodeMessage = (initialAnswer: boolean): string =>
+  boolean('Has body message', initialAnswer)
+    ? JSON.stringify({
+        message: text(
+          'Body message',
+          'Your account is temporary blocked due to exceeding of requests limitation of your subscription type.'
+        )
+      })
+    : ''
 
 export default {
   title: 'Forecast . ErrorReport',
@@ -36,7 +46,7 @@ export const BadStatus500: React.FC = () => (
       }),
       statusText: text('Status Text', 'Not Implemented'),
       headers: {},
-      body: ''
+      body: knobBodeMessage(true)
     })}
     onRetry={action('onRetry')}
   />
@@ -52,7 +62,7 @@ export const BadStatus400: React.FC = () => (
       }),
       statusText: text('Status Text', 'Not Found'),
       headers: {},
-      body: ''
+      body: knobBodeMessage(true)
     })}
     onRetry={action('onRetry')}
   />

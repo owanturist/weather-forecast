@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react'
 import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
 import { Typography } from '@material-ui/core'
+import Decode from 'frctl/Json/Decode'
 
 import { Error as HttpError } from 'httpBuilder'
 import styles from './styles.module.css'
@@ -71,16 +72,19 @@ const ErrorReport: React.FC<{
       </ViewContainer>
     ),
 
-    BadStatus: ({ statusCode }) => {
+    BadStatus: ({ statusCode, body }) => {
       const [side, role] =
         statusCode < 500 ? ['Client', 'frontend'] : ['Server', 'backend']
+      const message = Decode.field('message')
+        .string.decodeJSON(body)
+        .getOrElse(`Our ${role} developers are fixing the issue.`)
 
       return (
         <ViewContainer
           title={`You are facing an unexpected ${side} side Error ${statusCode}!`}
         >
           <Typography paragraph align="center">
-            Our {role} developers are fixing the issue.
+            {message}
           </Typography>
         </ViewContainer>
       )
