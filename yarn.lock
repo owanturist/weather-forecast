@@ -5254,6 +5254,13 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
+cypress-browser-permissions@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/cypress-browser-permissions/-/cypress-browser-permissions-1.0.5.tgz#650f99936cafd5b807344958f9bc184625f07593"
+  integrity sha512-oF6QfCRxWoGYUhhSjIhqN4pCFMmg9ZxEmbqJZVbf/nZoKAchFAzvSSwxbAAe9RgiqJ23f5pDymy8o5Mr/mDw8w==
+  dependencies:
+    lodash "^4.17.19"
+
 cypress@^4.12.1:
   version "4.12.1"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-4.12.1.tgz#0ead1b9f4c0917d69d8b57f996b6e01fe693b6ec"
