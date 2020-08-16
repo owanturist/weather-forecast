@@ -1,12 +1,15 @@
-import React from 'react'
-import Container from '@material-ui/core/Container'
+import React, { ReactElement } from 'react'
 import Box from '@material-ui/core/Box'
+import Container from '@material-ui/core/Container'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
 import Maybe from 'frctl/Maybe'
 import Either from 'frctl/Either'
 
 import { Effects, Dispatch, mapEffects } from 'core'
 import { Coordinates, getCurrentLocation } from 'geo'
 import * as Forecast from 'Forecast'
+import TopBar, { SkeletonTopBar } from './TopBar'
 
 // S T A T E
 
@@ -93,6 +96,30 @@ export const update = (
 
 // V I E W
 
+const ViewRoot: React.FC<{ topbar: ReactElement }> = ({ topbar, children }) => (
+  <Box>
+    <AppBar>
+      <Container disableGutters maxWidth="md">
+        {topbar}
+      </Container>
+    </AppBar>
+
+    <Toolbar />
+
+    <Box
+      display="flex"
+      minHeight="100%"
+      justifyContent="center"
+      alignItems="center"
+      padding={2}
+    >
+      <Container disableGutters maxWidth="md">
+        <Box bgcolor="background.paper">{children}</Box>
+      </Container>
+    </Box>
+  </Box>
+)
+
 export const View: React.FC<{ state: State; dispatch: Dispatch<Action> }> = ({
   state,
   dispatch
@@ -102,29 +129,21 @@ export const View: React.FC<{ state: State; dispatch: Dispatch<Action> }> = ({
     [dispatch]
   )
 
-  return (
-    <Box
-      display="flex"
-      minHeight="100%"
-      justifyContent="center"
-      alignItems="center"
-      padding={2}
-    >
-      <Container disableGutters maxWidth="md">
-        <Box bgcolor="background.paper">
-          {state.forecast.cata({
-            Nothing: () => <Forecast.Skeleton pageSize={3} />,
+  return state.forecast.cata({
+    Nothing: () => (
+      <ViewRoot topbar={<SkeletonTopBar />}>
+        <Forecast.Skeleton pageSize={3} />
+      </ViewRoot>
+    ),
 
-            Just: forecast => (
-              <Forecast.View
-                pageSize={3}
-                state={forecast}
-                dispatch={forecastDispatch}
-              />
-            )
-          })}
-        </Box>
-      </Container>
-    </Box>
-  )
+    Just: forecast => (
+      <ViewRoot topbar={<TopBar />}>
+        <Forecast.View
+          pageSize={3}
+          state={forecast}
+          dispatch={forecastDispatch}
+        />
+      </ViewRoot>
+    )
+  })
 }
