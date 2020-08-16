@@ -6,7 +6,14 @@ import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import SearchIcon from '@material-ui/icons/Search'
 import Skelet from '@material-ui/lab/Skeleton'
-import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles'
+import {
+  createStyles,
+  fade,
+  Theme,
+  makeStyles,
+  useTheme
+} from '@material-ui/core/styles'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { Cata } from 'frctl/Basics'
 
 import { Dispatch } from 'core'
@@ -91,8 +98,10 @@ const useCityhInputStyles = makeStyles((theme: Theme) =>
       transition: theme.transitions.create('width'),
       width: '12ch',
       '&:focus': {
-        width: '20ch',
-        backgroundColor: fade(theme.palette.common.white, 0.25)
+        backgroundColor: fade(theme.palette.common.white, 0.25),
+        [theme.breakpoints.up('sm')]: {
+          width: '20ch'
+        }
       },
       '&:hover': {
         backgroundColor: fade(theme.palette.common.white, 0.25)
@@ -150,17 +159,23 @@ const ViewRoot: React.FC<{ title: ReactNode }> = ({ title, children }) => (
   </Toolbar>
 )
 
+const useBigTitle = (): boolean => {
+  const theme = useTheme()
+
+  return useMediaQuery(theme.breakpoints.up('sm'))
+}
+
 export const View: React.FC<{
   state: State
   dispatch: Dispatch<Action>
 }> = React.memo(({ state, dispatch }) => (
-  <ViewRoot title="Weather Forecast">
+  <ViewRoot title={useBigTitle() ? 'Weather Forecast' : 'WF'}>
     <ViewCityInput value={state.city} dispatch={dispatch} />
   </ViewRoot>
 ))
 
 export const Skeleton: React.FC = React.memo(() => (
-  <ViewRoot title={<Skelet width="165px" />}>
+  <ViewRoot title={<Skelet width={useBigTitle() ? '165px' : '30px'} />}>
     <Skelet variant="rect" width="139px" height="35px" />
     <ViewSearchButtonContainer>
       <Skelet variant="circle" width="48px" height="48px" />
