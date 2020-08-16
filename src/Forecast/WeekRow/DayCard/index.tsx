@@ -91,10 +91,9 @@ const ViewDetailsButton: React.FC<{
   return (
     <Button
       fullWidth={fullWidth}
-      disabled={active}
       color="primary"
       size="small"
-      variant="contained"
+      variant={active ? 'outlined' : 'contained'}
       onClick={onShowDetails}
     >
       {fullWidth ? 'Details' : 'Show Details'}
