@@ -22,8 +22,8 @@ export const Provider = React.memo(
 
     React.useEffect(() => {
       const store = createStoreWithEffects<S, A, unknown, unknown>(createStore)(
-        update,
         init,
+        update,
         composeWithDevTools()
       )
 

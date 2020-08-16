@@ -19,6 +19,11 @@ const noop = (): void => {
   /* noop */
 }
 
+/**
+ * Decorator guarantees to run fn just once.
+ *
+ * @param fn
+ */
 export const once = <A extends Array<unknown>>(
   fn: (...args: A) => void
 ): ((...args: A) => void) => {
@@ -30,6 +35,12 @@ export const once = <A extends Array<unknown>>(
   }
 }
 
+/**
+ * Rounds a float number with specific precision.
+ *
+ * @param float
+ * @param precision
+ */
 export const round = (float: number, precision?: number): number => {
   if (typeof precision === 'undefined' || precision < 1) {
     return Math.round(float)

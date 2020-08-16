@@ -1,5 +1,8 @@
 import { round } from 'utils'
 
+/**
+ * Represents measure units of temperature
+ */
 enum TempUnits {
   Celcius = 'metric',
   Fahrenheit = 'imperial'
