@@ -72,6 +72,12 @@ export const update = (action: Action, state: State): Stage => {
 
 // V I E W
 
+const ViewSearchButtonContainer: React.FC = ({ children }) => (
+  <Box display="inline-block" marginLeft={1}>
+    {children}
+  </Box>
+)
+
 const useCityhInputStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -80,7 +86,6 @@ const useCityhInputStyles = makeStyles((theme: Theme) =>
 
     input: {
       borderRadius: theme.shape.borderRadius,
-      marginRight: theme.spacing(1),
       padding: theme.spacing(1, 2),
       backgroundColor: fade(theme.palette.common.white, 0.15),
       transition: theme.transitions.create('width'),
@@ -120,13 +125,15 @@ const ViewCityInput: React.FC<{
         onChange={event => dispatch(ChangeCity(event.currentTarget.value))}
       />
 
-      <IconButton
-        type="submit"
-        color="inherit"
-        aria-label="Search Forecast for City"
-      >
-        <SearchIcon />
-      </IconButton>
+      <ViewSearchButtonContainer>
+        <IconButton
+          type="submit"
+          color="inherit"
+          aria-label="Search Forecast for City"
+        >
+          <SearchIcon />
+        </IconButton>
+      </ViewSearchButtonContainer>
     </form>
   )
 }
@@ -154,6 +161,9 @@ export const View: React.FC<{
 
 export const Skeleton: React.FC = React.memo(() => (
   <ViewRoot title={<Skelet width="165px" />}>
-    <Skelet variant="rect" width="156px" height="35px" />
+    <Skelet variant="rect" width="139px" height="35px" />
+    <ViewSearchButtonContainer>
+      <Skelet variant="circle" width="48px" height="48px" />
+    </ViewSearchButtonContainer>
   </ViewRoot>
 ))
