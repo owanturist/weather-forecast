@@ -1,4 +1,4 @@
-# User Feedback | [Demo](https://bit.ly/weather-forecast-demo) | [Storybook](https://bit.ly/weather-forecast-ui)
+# Weather Forecast | [Demo](https://bit.ly/weather-forecast-demo) | [Storybook](https://bit.ly/weather-forecast-ui)
 
 _This project was bootstrapped with [Create React App][cra]._
 
