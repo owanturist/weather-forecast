@@ -3,34 +3,85 @@ import Box from '@material-ui/core/Box'
 import Toolbar from '@material-ui/core/Toolbar'
 import InputBase from '@material-ui/core/InputBase'
 import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
 import SearchIcon from '@material-ui/icons/Search'
-import Skeleton from '@material-ui/lab/Skeleton'
-
+import Skelet from '@material-ui/lab/Skeleton'
 import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles'
+import { Cata } from 'frctl/Basics'
 
-const useSearchInputStyles = makeStyles((theme: Theme) =>
+import { Dispatch } from 'core'
+import { callOrElse } from 'utils'
+
+// S T A T E
+
+export type State = {
+  city: string
+}
+
+export const initial = (city: string): State => ({ city })
+
+// U P D A T E
+
+export type Action =
+  | { type: 'ChangeCity'; city: string }
+  | { type: 'SearchForCity' }
+
+const ChangeCity = (city: string): Action => ({ type: 'ChangeCity', city })
+
+const SearchForCity: Action = { type: 'SearchForCity' }
+
+export type StagePattern<R> = Cata<{
+  Updated(nextState: State): R
+  Searched(city: string): R
+}>
+
+export type Stage = {
+  cata<R>(pattern: StagePattern<R>): R
+}
+
+class Updated implements Stage {
+  constructor(private readonly nextState: State) {}
+
+  public cata<R>(pattern: StagePattern<R>): R {
+    return callOrElse(pattern._, pattern.Updated, this.nextState)
+  }
+}
+
+class Searched implements Stage {
+  constructor(private readonly city: string) {}
+
+  public cata<R>(pattern: StagePattern<R>): R {
+    return callOrElse(pattern._, pattern.Searched, this.city)
+  }
+}
+
+export const update = (action: Action, state: State): Stage => {
+  switch (action.type) {
+    case 'ChangeCity': {
+      return new Updated({
+        ...state,
+        city: action.city
+      })
+    }
+
+    case 'SearchForCity': {
+      return new Searched(state.city.trim())
+    }
+  }
+}
+
+// V I E W
+
+const useCityhInputStyles = makeStyles((theme: Theme) =>
   createStyles({
-    container: {
-      position: 'relative',
-      marginLeft: theme.spacing(1),
-      borderRadius: theme.shape.borderRadius,
-      overflow: 'hidden'
-    },
-
-    icon: {
-      padding: theme.spacing(0, 2),
-      position: 'absolute',
-      pointerEvents: 'none'
-    },
-
     root: {
       color: 'inherit'
     },
 
     input: {
-      padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+      borderRadius: theme.shape.borderRadius,
+      marginRight: theme.spacing(1),
+      padding: theme.spacing(1, 2),
       backgroundColor: fade(theme.palette.common.white, 0.15),
       transition: theme.transitions.create('width'),
       width: '12ch',
@@ -45,21 +96,19 @@ const useSearchInputStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const ViewSearchInput: React.FC = () => {
-  const classes = useSearchInputStyles()
+const ViewCityInput: React.FC<{
+  value: string
+  dispatch: Dispatch<Action>
+}> = ({ value, dispatch }) => {
+  const classes = useCityhInputStyles()
 
   return (
-    <div className={classes.container}>
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-        className={classes.icon}
-      >
-        <SearchIcon />
-      </Box>
-
+    <form
+      onSubmit={event => {
+        dispatch(SearchForCity)
+        event.preventDefault()
+      }}
+    >
       <InputBase
         placeholder="City name…"
         classes={{
@@ -67,8 +116,18 @@ const ViewSearchInput: React.FC = () => {
           input: classes.input
         }}
         inputProps={{ 'aria-label': 'City Name' }}
+        value={value}
+        onChange={event => dispatch(ChangeCity(event.currentTarget.value))}
       />
-    </div>
+
+      <IconButton
+        type="submit"
+        color="inherit"
+        aria-label="Search Forecast for City"
+      >
+        <SearchIcon />
+      </IconButton>
+    </form>
   )
 }
 
@@ -84,16 +143,17 @@ const ViewRoot: React.FC<{ title: ReactNode }> = ({ title, children }) => (
   </Toolbar>
 )
 
-const TopBar: React.FC = React.memo(() => (
+export const View: React.FC<{
+  state: State
+  dispatch: Dispatch<Action>
+}> = React.memo(({ state, dispatch }) => (
   <ViewRoot title="Weather Forecast">
-    <ViewSearchInput />
+    <ViewCityInput value={state.city} dispatch={dispatch} />
   </ViewRoot>
 ))
 
-export default TopBar
-
-export const SkeletonTopBar: React.FC = React.memo(() => (
-  <ViewRoot title={<Skeleton width="165px" />}>
-    <Skeleton variant="rect" width="164px" height="35px" />
+export const Skeleton: React.FC = React.memo(() => (
+  <ViewRoot title={<Skelet width="165px" />}>
+    <Skelet variant="rect" width="156px" height="35px" />
   </ViewRoot>
 ))

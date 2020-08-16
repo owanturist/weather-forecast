@@ -73,6 +73,16 @@ const ErrorReport: React.FC<{
     ),
 
     BadStatus: ({ statusCode, body }) => {
+      if (statusCode === 404) {
+        return (
+          <ViewContainer title="We can't find this city">
+            <Typography paragraph align="center">
+              Please make sure there is no mistake in the city name.
+            </Typography>
+          </ViewContainer>
+        )
+      }
+
       const [side, role] =
         statusCode < 500 ? ['Client', 'frontend'] : ['Server', 'backend']
       const message = Decode.field('message')

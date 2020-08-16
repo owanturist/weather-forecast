@@ -40,7 +40,7 @@ export const Initial: React.FC = () => (
       })}
       unitsChanging={boolean('Units changing', false)}
       units={TempUnits.Celcius}
-      weekForecast={[
+      forecastDays={[
         makeDayForecast('09-02-1993', 23),
         makeDayForecast('09-03-1993', 20),
         makeDayForecast('09-04-1993', 24),

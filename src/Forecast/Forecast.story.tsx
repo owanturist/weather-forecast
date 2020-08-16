@@ -34,13 +34,16 @@ const knobSucceedState = (): Forecast.State => ({
   ...initial,
   unitsChanging: boolean('Units changing', false),
   units: TempUnits.Fahrenheit,
-  weekForecast: RemoteData.Succeed([
-    makeDayForecast('09-02-1993', 23.04),
-    makeDayForecast('09-03-1993', 20.82),
-    makeDayForecast('09-04-1993', 24.74),
-    makeDayForecast('09-05-1993', 26.14),
-    makeDayForecast('09-06-1993', 17.65)
-  ])
+  forecast: RemoteData.Succeed({
+    city: 'London',
+    days: [
+      makeDayForecast('09-02-1993', 23.04),
+      makeDayForecast('09-03-1993', 20.82),
+      makeDayForecast('09-04-1993', 24.74),
+      makeDayForecast('09-05-1993', 26.14),
+      makeDayForecast('09-06-1993', 17.65)
+    ]
+  })
 })
 
 export const Loading: React.FC = () => (
@@ -60,7 +63,7 @@ export const Failure: React.FC = () => (
     pageSize={3}
     state={{
       ...initial,
-      weekForecast: RemoteData.Failure(HttpError.Timeout)
+      forecast: RemoteData.Failure(HttpError.Timeout)
     }}
     dispatch={action('dispatch')}
   />
