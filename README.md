@@ -1,4 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Weather Forecast | [Demo](https://bit.ly/weather-forecast-demo) | [Storybook](https://bit.ly/weather-forecast-ui)
+
+_This project was bootstrapped with [Create React App][cra]._
 
 ## Available Scripts
 
@@ -6,11 +8,14 @@ In the project directory, you can run:
 
 ### `yarn start`
 
+Builds and runs optimised app locally at [http://localhost:3000](http://localhost:3000).
+
+### `yarn dev`
+
 Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+The page will reload if you make edits
 
 ### `yarn test`
 
@@ -22,23 +27,76 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 Builds the app for production to the `build` folder.<br />
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+The build is minified and the filenames include the hashes.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `yarn lint`
 
-### `yarn eject`
+Runs [ESLint][eslint] for every TypeScript and JavaScript file including TSX/JSX.<br />
+Prompts lint warnings and errors to console.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### `yarn prettify`
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Runs [Prettier][prettier] for everything.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### `yarn analyze`
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Runs [source-map-explorer][sme] on `build` folder.<br />
+It shows you a treemap visualization to help you debug where all the code is coming from.
 
-## Learn More
+### `yarn storybook`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Runs [Storybook][storybook] sandbox.<br />
+Open [http://localhost:9009](http://localhost:9009) to view it in the browser.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The page will reload if you make edits
+
+### `yarn storybook:build`
+
+Builds the storybook sandbox for deploy to the `storybook-static` folder.
+
+### [`yarn cy:open`](https://docs.cypress.io/guides/guides/command-line.html#cypress-open)
+
+Opens the [Cypress][cypress] Test Runner.
+
+### [`yarn cy:run`](https://docs.cypress.io/guides/guides/command-line.html#cypress-run)
+
+Runs Cypress tests to completion.
+
+## Tech Stack
+
+- [TypeScript][ts]
+- [Webpack](https://webpack.js.org/) configured via [Create React App][cra]
+- Code linting with [ESLint][eslint] and [Prettier][prettier]
+- Isolated React component development environment with [Storybook][storybook]
+- Functional tests with [Cypress][cypress]
+- Unit tests with [Jest][jest]
+- Bundle analyser [source-map-explorer][sme] to keep the size
+- Prepush/commit hooks with [husky][husky]
+- Layout with [React][react]
+- UI components library is [MaterialUI][material-ui]
+- State management with [Redux][redux]
+- Styles with [css-modules][css-modules]
+
+## Features
+
+- [x] responsible layout
+- [x] show forecast for current location
+- [ ] retrieve forecast for specific city
+
+## Limitations
+
+The app queries current user location when it runs either with https or from localhost. If the location request is failed the app shows forecast for Munic as a fallback.
+
+[cra]: https://github.com/facebook/create-react-app
+[ts]: https://www.typescriptlang.org
+[eslint]: https://eslint.org
+[prettier]: https://prettier.io
+[storybook]: https://storybook.js.org
+[cypress]: https://www.cypress.io
+[jest]: https://jestjs.io/
+[sme]: https://www.npmjs.com/package/source-map-explorer
+[husky]: https://github.com/typicode/husky
+[react]: https://reactjs.org/
+[material-ui]: https://material-ui.com
+[redux]: https://redux.js.org/
+[css-modules]: https://github.com/css-modules/css-modules

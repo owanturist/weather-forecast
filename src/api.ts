@@ -9,6 +9,12 @@ const FORECAST_API_URL = process.env.REACT_APP_FORECAST_API_URL || ''
 const FORECAST_API_APPID = process.env.REACT_APP_FORECAST_API_APPID || ''
 const TIMEOUT = Number(process.env.REACT_APP_HTTP_TIMEOUT || 0)
 
+/**
+ * Retrieves five day forecast for specific city
+ *
+ * @param units temperature units
+ * @param city
+ */
 export const getFiveDayForecastForCity = (
   units: TempUnits,
   city: string
@@ -22,6 +28,12 @@ export const getFiveDayForecastForCity = (
     .expectJson(Decode.field('list').of(dayForecastDecoder))
 }
 
+/**
+ * Retrieves five day forecast for specific position
+ *
+ * @param units temperature units
+ * @param city
+ */
 export const getFiveDayForecastForCoordinates = (
   units: TempUnits,
   coordinates: Coordinates

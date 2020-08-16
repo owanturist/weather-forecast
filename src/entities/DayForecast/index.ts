@@ -1,14 +1,31 @@
 import dayjs, { Dayjs } from 'dayjs'
 import Decode, { Decoder } from 'frctl/Json/Decode'
 
+/**
+ * Represents summary day forecast build from segments.
+ */
 type DayForecast = {
+  /**
+   * Returns date of forecast
+   */
   getDate(): Dayjs
+
+  /**
+   * Returns temperature calculadted as average temp of segments
+   */
   getAverageTemp(): number
+
+  /**
+   * Returns temp segments of a day
+   */
   getSegments(): Array<DayForecastSegment>
 }
 
 export default DayForecast
 
+/**
+ * Represents 3 hours forecast segment
+ */
 export type DayForecastSegment = {
   datetime: Dayjs
   temp: number
