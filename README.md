@@ -81,7 +81,7 @@ Runs Cypress tests to completion.
 
 - [x] responsible layout
 - [x] show forecast for current location
-- [ ] retrieve forecast for specific city
+- [x] retrieve forecast for specific city
 
 ## Limitations
 

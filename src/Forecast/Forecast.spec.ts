@@ -12,7 +12,7 @@ it('initByCity', () => {
     origin: Forecast.ByCity('cityname'),
     units: TempUnits.Fahrenheit,
     unitsChanging: false,
-    weekForecast: RemoteData.Loading
+    forecast: RemoteData.Loading
   })
 })
 
@@ -24,7 +24,7 @@ it('initByCoordinates', () => {
     origin: Forecast.ByCoordinates(coords),
     units: TempUnits.Fahrenheit,
     unitsChanging: false,
-    weekForecast: RemoteData.Loading
+    forecast: RemoteData.Loading
   })
 })
 
@@ -38,7 +38,7 @@ describe('update', () => {
         origin: Forecast.ByCity('cityname'),
         units: TempUnits.Celcius,
         unitsChanging: true,
-        weekForecast: RemoteData.Failure(HttpError.Timeout)
+        forecast: RemoteData.Failure(HttpError.Timeout)
       }
     )
 
@@ -46,7 +46,7 @@ describe('update', () => {
       origin: Forecast.ByCity('cityname'),
       units: TempUnits.Celcius,
       unitsChanging: true,
-      weekForecast: RemoteData.Loading
+      forecast: RemoteData.Loading
     })
   })
 
@@ -61,7 +61,7 @@ describe('update', () => {
           origin: Forecast.ByCity('cityname'),
           units: TempUnits.Celcius,
           unitsChanging: true,
-          weekForecast: RemoteData.Loading
+          forecast: RemoteData.Loading
         }
       )
 
@@ -69,7 +69,7 @@ describe('update', () => {
         origin: Forecast.ByCity('cityname'),
         units: TempUnits.Celcius,
         unitsChanging: false,
-        weekForecast: RemoteData.Failure(HttpError.NetworkError)
+        forecast: RemoteData.Failure(HttpError.NetworkError)
       })
     })
 
@@ -77,13 +77,16 @@ describe('update', () => {
       const [nextState] = Forecast.update(
         {
           type: 'LoadForecastDone',
-          result: Either.Right([])
+          result: Either.Right({
+            city: 'London',
+            days: []
+          })
         },
         {
           origin: Forecast.ByCity('cityname'),
           units: TempUnits.Fahrenheit,
           unitsChanging: true,
-          weekForecast: RemoteData.Loading
+          forecast: RemoteData.Loading
         }
       )
 
@@ -92,7 +95,10 @@ describe('update', () => {
 
         units: TempUnits.Fahrenheit,
         unitsChanging: false,
-        weekForecast: RemoteData.Succeed([])
+        forecast: RemoteData.Succeed({
+          city: 'London',
+          days: []
+        })
       })
     })
   })
@@ -107,7 +113,10 @@ describe('update', () => {
         origin: Forecast.ByCity('cityname'),
         units: TempUnits.Celcius,
         unitsChanging: false,
-        weekForecast: RemoteData.Succeed([])
+        forecast: RemoteData.Succeed({
+          city: 'London',
+          days: []
+        })
       }
     )
 
@@ -115,7 +124,10 @@ describe('update', () => {
       origin: Forecast.ByCity('cityname'),
       units: TempUnits.Fahrenheit,
       unitsChanging: true,
-      weekForecast: RemoteData.Succeed([])
+      forecast: RemoteData.Succeed({
+        city: 'London',
+        days: []
+      })
     })
   })
 })

@@ -134,7 +134,7 @@ export const SkeletonDayCard: React.FC = React.memo(() => {
 
   return (
     <ViewCard
-      elevation={0}
+      elevation={1}
       tempNode={<Skeleton />}
       dateNode={<Skeleton />}
       actionNode={

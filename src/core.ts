@@ -20,12 +20,12 @@ export type Action = ReduxAction
  *
  * This is an extremelly simplified [redux-loop](https://github.com/redux-loop/redux-loop)
  */
-export type Effect<A extends Action> = (dispatch: Dispatch<A>) => void
+export type Effect<A> = (dispatch: Dispatch<A>) => void
 
 /**
  * An array of effects
  */
-export type Effects<A extends Action> = Array<Effect<A>>
+export type Effects<A> = Array<Effect<A>>
 
 /**
  * Transforms effect to produce R action instead of A action.
@@ -33,7 +33,7 @@ export type Effects<A extends Action> = Array<Effect<A>>
  * @param tagger function to transform A → R
  * @param effect effect producing A
  */
-export const mapEffect = <A extends Action, R extends Action>(
+export const mapEffect = <A, R>(
   tagger: (action: A) => R,
   effect: Effect<A>
 ): Effect<R> => {
@@ -47,7 +47,7 @@ export const mapEffect = <A extends Action, R extends Action>(
  * @param effects effects producing A
  * @see mapEffect
  */
-export const mapEffects = <A extends Action, R extends Action>(
+export const mapEffects = <A, R>(
   tagger: (action: A) => R,
   effects: Effects<A>
 ): Effects<R> => {
@@ -57,7 +57,7 @@ export const mapEffects = <A extends Action, R extends Action>(
 /**
  * Dispatches action to be performed in order to update state.
  */
-export type Dispatch<A extends Action> = (action: A) => void
+export type Dispatch<A> = (action: A) => void
 
 /**
  * Creates redux store fabric.

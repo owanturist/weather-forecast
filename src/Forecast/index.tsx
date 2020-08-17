@@ -10,18 +10,15 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import Skelet from '@material-ui/lab/Skeleton'
 import { Cata, cons } from 'frctl/Basics'
-import RemoteData from 'frctl/RemoteData'
+import Maybe from 'frctl/Maybe'
 import Either from 'frctl/Either'
+import RemoteData from 'frctl/RemoteData'
 
 import { Dispatch, Effect, Effects } from 'core'
 import { Coordinates } from 'geo'
 import { callOrElse } from 'utils'
-import {
-  getFiveDayForecastForCity,
-  getFiveDayForecastForCoordinates
-} from 'api'
+import { Forecast, getForecastForCity, getForecastForCoordinates } from 'api'
 import TempUnits from 'entities/TempUnits'
-import DayForecast from 'entities/DayForecast'
 import { Error as HttpError } from 'httpBuilder'
 import WeekRow, { SkeletonWeekRow } from './WeekRow'
 import ErrorReport from './ErrorReport'
@@ -65,7 +62,11 @@ export type State = {
   origin: Origin
   units: TempUnits
   unitsChanging: boolean
-  weekForecast: RemoteData<HttpError, Array<DayForecast>>
+  forecast: RemoteData<HttpError, Forecast>
+}
+
+export const getCityName = (state: State): Maybe<string> => {
+  return state.forecast.toMaybe().map(({ city }) => city)
 }
 
 const loadForecastForOrigin = (
@@ -74,22 +75,20 @@ const loadForecastForOrigin = (
 ): Effect<Action> => {
   return origin
     .cata({
-      ByCity: city => getFiveDayForecastForCity(units, city),
+      ByCity: city => getForecastForCity(units, city),
       ByCoordinates: coordinates =>
-        getFiveDayForecastForCoordinates(units, coordinates)
+        getForecastForCoordinates(units, coordinates)
     })
     .send(LoadForecastDone)
 }
 
 const init = (origin: Origin): [State, Effects<Action>] => {
-  const initial = {
+  return reinit(origin, {
     origin,
     units: TempUnits.Fahrenheit,
     unitsChanging: false,
-    weekForecast: RemoteData.Loading
-  }
-
-  return [initial, [loadForecastForOrigin(initial.units, origin)]]
+    forecast: RemoteData.Loading
+  })
 }
 
 export const initByCity = (city: string): [State, Effects<Action>] => {
@@ -102,18 +101,41 @@ export const initByCoordinates = (
   return init(ByCoordinates(coordinates))
 }
 
+const reinit = (origin: Origin, state: State): [State, Effects<Action>] => {
+  return [
+    {
+      ...state,
+      origin,
+      forecast: RemoteData.Loading
+    },
+    [loadForecastForOrigin(state.units, origin)]
+  ]
+}
+
+export const reinitByCity = (
+  city: string,
+  state: State
+): [State, Effects<Action>] => {
+  return reinit(ByCity(city), state)
+}
+
+export const reinitByCoordinates = (
+  coordinates: Coordinates,
+  state: State
+): [State, Effects<Action>] => {
+  return reinit(ByCoordinates(coordinates), state)
+}
+
 // U P D A T E
 
 export type Action =
   | { type: 'LoadForecast' }
-  | { type: 'LoadForecastDone'; result: Either<HttpError, Array<DayForecast>> }
+  | { type: 'LoadForecastDone'; result: Either<HttpError, Forecast> }
   | { type: 'ChangeUnits'; units: TempUnits }
 
 const LoadForecast: Action = { type: 'LoadForecast' }
 
-const LoadForecastDone = (
-  result: Either<HttpError, Array<DayForecast>>
-): Action => ({
+const LoadForecastDone = (result: Either<HttpError, Forecast>): Action => ({
   type: 'LoadForecastDone',
   result
 })
@@ -132,7 +154,7 @@ export const update = (
       return [
         {
           ...state,
-          weekForecast: RemoteData.Loading
+          forecast: RemoteData.Loading
         },
         [loadForecastForOrigin(state.units, state.origin)]
       ]
@@ -143,7 +165,7 @@ export const update = (
         {
           ...state,
           unitsChanging: false,
-          weekForecast: RemoteData.fromEither(action.result)
+          forecast: RemoteData.fromEither(action.result)
         },
         []
       ]
@@ -260,10 +282,10 @@ const ViewSucceed: React.FC<{
   pageSize: number
   units: TempUnits
   unitsChanging: boolean
-  weekForecast: Array<DayForecast>
+  forecast: Forecast
   dispatch: Dispatch<Action>
 }> = React.memo(props => {
-  const { pageSize, units, unitsChanging, weekForecast, dispatch } = props
+  const { pageSize, units, unitsChanging, forecast, dispatch } = props
   const [{ shiftIndex, activeIndex }, setState] = React.useState({
     shiftIndex: 0,
     activeIndex: 0
@@ -287,7 +309,9 @@ const ViewSucceed: React.FC<{
     [dispatch]
   )
 
-  const activeDaySegments = weekForecast[shiftIndex + activeIndex].getSegments()
+  const activeDaySegments = forecast.days[
+    shiftIndex + activeIndex
+  ].getSegments()
 
   return (
     <div data-cy="forecast__root">
@@ -304,7 +328,7 @@ const ViewSucceed: React.FC<{
 
         <ViewNavigation
           prevVisible={shiftIndex > 0}
-          nextVisible={shiftIndex < weekForecast.length - pageSize}
+          nextVisible={shiftIndex < forecast.days.length - pageSize}
           onPrevClick={onPrevClick}
           onNextClick={onNextClick}
         />
@@ -317,7 +341,7 @@ const ViewSucceed: React.FC<{
           activeIndex={shiftIndex + activeIndex}
           units={units}
           unitsChanging={unitsChanging}
-          weekForecast={weekForecast}
+          forecastDays={forecast.days}
           onShowDetails={onShowDetails}
         />
       </ViewWeekRowContainer>
@@ -338,17 +362,17 @@ export const View: React.FC<{
 }> = React.memo(({ pageSize, state, dispatch }) => {
   const onRetry = React.useCallback(() => dispatch(LoadForecast), [dispatch])
 
-  return state.weekForecast.cata({
+  return state.forecast.cata({
     Loading: () => <Skeleton pageSize={pageSize} />,
 
     Failure: error => <ErrorReport error={error} onRetry={onRetry} />,
 
-    Succeed: weekForecast => (
+    Succeed: forecast => (
       <ViewSucceed
         pageSize={pageSize}
         units={state.units}
         unitsChanging={state.unitsChanging}
-        weekForecast={weekForecast}
+        forecast={forecast}
         dispatch={dispatch}
       />
     )
