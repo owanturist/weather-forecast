@@ -25,7 +25,7 @@ export const Failure: React.FC = () => (
       ...initial,
       forecast: Maybe.Just({
         ...initialForecast,
-        weekForecast: RemoteData.Failure(HttpError.NetworkError)
+        forecast: RemoteData.Failure(HttpError.NetworkError)
       })
     }}
     dispatch={action('dispatch')}
