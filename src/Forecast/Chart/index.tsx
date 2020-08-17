@@ -19,7 +19,7 @@ import { DayForecastSegment } from 'entities/DayForecast'
 const convertSegmentToPoint = (
   segment: DayForecastSegment
 ): { x: string; y: number } => ({
-  x: segment.datetime.format('HH:mm'),
+  x: segment.datetime.format('HH:mm A'),
   y: segment.temp
 })
 
